@@ -1,0 +1,1764 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IBK 상품 상담 가이드</title>
+<style>
+  :root {
+    --ink:#1d2433; --muted:#667085; --line:#dfe3ea; --bg:#f4f6fa; --card:#fff; --soft:#f8fafc;
+    --brand:#0b4ea2; --brand-soft:#e8f0fb;
+    --edu:#6941c6; --edu-soft:#f1ecfb; --guide:#0b7a75; --guide-soft:#e6f5f4; --teller:#0b4ea2; --teller-soft:#e8f0fb;
+    --ok:#067647; --ok-soft:#e7f6ec; --warn:#b54708; --warn-soft:#fff4e5; --bad:#b42318; --bad-soft:#fdecea;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; color:var(--ink); background:var(--bg); line-height:1.55; font-size:15px; }
+  button, input, select, textarea { font:inherit; color:inherit; }
+  a { color:var(--brand); }
+
+  .topbar { background:var(--brand); color:#fff; padding:14px 20px; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; }
+  .topbar h1 { margin:0; font-size:19px; }
+  .topbar .sub { font-size:13px; opacity:.85; }
+  .topbar .date { margin-left:auto; background:rgba(255,255,255,.15); border-radius:999px; padding:3px 12px; font-size:13px; }
+
+  .layout { display:grid; grid-template-columns:300px 1fr; gap:16px; padding:16px; max-width:1320px; margin:0 auto; }
+  @media (max-width:900px) { .layout { grid-template-columns:1fr; padding:12px; } }
+
+  aside { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; align-self:start; position:sticky; top:12px; max-height:calc(100vh - 24px); overflow:auto; }
+  @media (max-width:900px) { aside { position:static; max-height:none; } }
+  aside h2 { font-size:14px; margin:0 0 8px; color:var(--muted); }
+  .filters { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .chip { border:1px solid var(--line); background:var(--card); border-radius:999px; padding:4px 11px; cursor:pointer; font-size:13px; }
+  .chip.on { background:var(--brand); color:#fff; border-color:var(--brand); }
+  .plist { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .pitem { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; background:var(--card); text-align:left; width:100%; }
+  .pitem:hover { border-color:var(--brand); }
+  .pitem.on { border-color:var(--brand); background:var(--brand-soft); box-shadow:inset 3px 0 0 var(--brand); }
+  .pitem .nm { font-weight:bold; font-size:14px; display:block; }
+  .pitem .ol { font-size:12px; color:var(--muted); display:block; }
+  .pitem .kv { font-size:12px; color:var(--brand); font-weight:bold; }
+
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .tab { flex:1 1 180px; border:2px solid var(--line); background:var(--card); border-radius:12px; padding:10px 12px; cursor:pointer; text-align:left; }
+  .tab b { display:block; font-size:15px; }
+  .tab span { font-size:12px; color:var(--muted); }
+  .tab[data-k=edu].on { border-color:var(--edu); background:var(--edu-soft); }
+  .tab[data-k=guide].on { border-color:var(--guide); background:var(--guide-soft); }
+  .tab[data-k=teller].on { border-color:var(--teller); background:var(--teller-soft); }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .btn { border:1px solid var(--brand); background:var(--brand); color:#fff; border-radius:8px; padding:7px 14px; cursor:pointer; }
+  .btn.ghost { background:var(--card); color:var(--brand); }
+
+  .report { display:none; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 26px; }
+  .report.active { display:block; }
+  @media (max-width:600px) { .report { padding:16px; } }
+  .rhead { border-bottom:3px solid var(--accent); padding-bottom:12px; margin-bottom:16px; }
+  .rhead .kind { display:inline-block; background:var(--accent); color:#fff; border-radius:6px; padding:2px 10px; font-size:13px; }
+  .rhead h2 { margin:6px 0 2px; font-size:23px; }
+  .rhead .meta { font-size:12.5px; color:var(--muted); }
+  #rep-edu { --accent:var(--edu); --accent-soft:var(--edu-soft); }
+  #rep-guide { --accent:var(--guide); --accent-soft:var(--guide-soft); }
+  #rep-teller { --accent:var(--teller); --accent-soft:var(--teller-soft); }
+  .report h3 { font-size:17px; margin:24px 0 10px; padding-left:9px; border-left:4px solid var(--accent); }
+  .report h4 { font-size:14px; margin:12px 0 4px; }
+  .lead { font-size:16px; background:var(--accent-soft); border-radius:10px; padding:12px 14px; }
+
+  table { border-collapse:collapse; width:100%; font-size:14px; }
+  th, td { border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top; }
+  th { background:var(--soft); white-space:nowrap; }
+  .tbl-wrap { overflow-x:auto; }
+  tr.me td { background:var(--accent-soft); font-weight:bold; }
+
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; }
+  .tile { border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:var(--soft); }
+  .tile .l { font-size:12.5px; color:var(--muted); }
+  .tile .v { font-size:21px; font-weight:bold; color:var(--accent); line-height:1.3; }
+  .tile .s { font-size:12px; color:var(--muted); }
+
+  .badge { display:inline-block; border-radius:999px; padding:2px 10px; font-size:12.5px; font-weight:bold; }
+  .b-ok { background:var(--ok-soft); color:var(--ok); } .b-warn { background:var(--warn-soft); color:var(--warn); } .b-bad { background:var(--bad-soft); color:var(--bad); }
+  .box { border-radius:10px; padding:11px 14px; margin:8px 0; }
+  .box.warn { background:var(--warn-soft); border:1px solid #f5c98b; }
+  .box.bad { background:var(--bad-soft); border:1px solid #f3b4ae; }
+  .box.ok { background:var(--ok-soft); border:1px solid #a6dcb8; }
+  .box.info { background:var(--soft); border:1px solid var(--line); }
+  ul.clean { margin:6px 0; padding-left:20px; } ul.clean li { margin:3px 0; }
+  .checks { list-style:none; padding:0; margin:6px 0; } .checks li { padding:6px 0; border-bottom:1px dashed var(--line); display:flex; gap:8px; }
+  .checks .ic { flex:0 0 22px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; } @media (max-width:700px){ .grid2 { grid-template-columns:1fr; } }
+  .muted { color:var(--muted); } .small { font-size:12.5px; }
+
+  .flash { border:1px solid var(--line); border-radius:10px; margin:8px 0; overflow:hidden; }
+  .flash summary { cursor:pointer; padding:10px 12px; background:var(--soft); font-weight:bold; list-style:none; }
+  .flash summary::before { content:"Q. "; color:var(--accent); }
+  .flash div { padding:10px 12px; } .flash div::before { content:"A. "; font-weight:bold; color:var(--ok); }
+
+  .script { border-left:3px solid var(--accent); padding:4px 0 4px 12px; margin:10px 0; }
+  .script .step { font-size:12.5px; font-weight:bold; color:var(--accent); }
+  .script p { margin:3px 0; }
+  .say { background:var(--soft); border-radius:8px; padding:8px 11px; margin:4px 0; }
+  .say::before { content:"화법"; display:inline-block; font-size:11px; font-weight:bold; color:#fff; background:var(--accent); border-radius:4px; padding:0 5px; margin-right:7px; vertical-align:1px; }
+
+  .calc { border:1px dashed var(--accent); border-radius:12px; padding:12px 14px; background:var(--card); }
+  .calc label { display:inline-flex; flex-direction:column; font-size:12.5px; color:var(--muted); margin:0 12px 8px 0; }
+  .calc input, .calc select, .form input, .form select, .form textarea { border:1px solid var(--line); border-radius:7px; padding:6px 8px; background:#fff; min-width:120px; }
+  .calc .res { font-size:15px; margin-top:6px; }
+  .calc .big { font-size:24px; font-weight:bold; color:var(--accent); }
+
+  .form { background:var(--teller-soft); border:1px solid #c9d9f2; border-radius:12px; padding:14px 16px; margin-bottom:12px; }
+  .form h3 { margin:0 0 10px; font-size:16px; border:0; padding:0; }
+  .form .row { display:flex; flex-wrap:wrap; gap:10px 14px; }
+  .form label { display:flex; flex-direction:column; font-size:12.5px; color:var(--muted); }
+  .form .needs { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .form .needs label { flex-direction:row; align-items:center; gap:4px; background:#fff; border:1px solid var(--line); border-radius:999px; padding:3px 10px; color:var(--ink); font-size:13px; cursor:pointer; }
+  .form .flags { display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:6px; }
+  .form .flags label { flex-direction:row; gap:5px; color:var(--ink); font-size:13.5px; align-items:center; }
+  .form input[type=checkbox], .principles input[type=checkbox] { min-width:0; width:auto; margin:0; }
+  .presets { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:12px; }
+  .preset { border:1px solid #c9d9f2; background:#fff; border-radius:10px; padding:8px 10px; cursor:pointer; text-align:left; }
+  .preset b { display:block; font-size:14px; } .preset span { font-size:12px; color:var(--muted); }
+  .preset.on { border:2px solid var(--teller); background:#fff; box-shadow:0 0 0 3px #c9d9f2; }
+  .rank { list-style:none; margin:8px 0 0; padding:0; display:grid; gap:6px; }
+  .rank li { background:#fff; border:1px solid var(--line); border-radius:8px; padding:7px 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .rank .no { font-weight:bold; color:var(--teller); font-size:16px; }
+  .rank .why { font-size:12.5px; color:var(--muted); flex:1 1 260px; }
+  .rank li.me { border-color:var(--teller); background:var(--teller-soft); }
+
+  .recs { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+  .rec { border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:var(--soft); }
+  .rec b { display:block; } .rec .why { font-size:13px; }
+  .rec button { margin-top:6px; font-size:12.5px; padding:3px 10px; }
+
+  .principles { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:6px 14px; }
+  .principles label { display:flex; gap:7px; align-items:flex-start; font-size:14px; }
+  textarea.memo { width:100%; min-height:70px; border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .memo-print { display:none; white-space:pre-wrap; border:1px solid var(--line); border-radius:8px; padding:8px; min-height:50px; }
+
+  svg text { font-family:inherit; }
+  svg.i { width:1.05em; height:1.05em; vertical-align:-0.15em; flex:0 0 auto; }
+  svg.i.bi { margin-right:6px; color:var(--accent, var(--brand)); }
+  svg.i.cat { color:var(--brand); margin-right:4px; }
+  .tab b svg.i, .btn svg.i { margin-right:6px; }
+  .btn svg.i:last-child:not(:first-child) { margin:0 0 0 4px; }
+  .topbar .logo { height:26px; display:block; }
+  .topbar h1 { display:flex; align-items:center; gap:12px; }
+  .topbar h1 .sep { width:1px; height:18px; background:rgba(255,255,255,.4); }
+  .rhead .blogo { height:24px; display:block; margin-bottom:10px; }
+  .rhead .kind svg.i { margin-right:5px; }
+  .badge svg.i { margin-right:3px; }
+  .ic { display:inline-flex; align-items:center; justify-content:center; }
+  .ic-ok { color:var(--ok); } .ic-warn { color:var(--warn); } .ic-bad { color:var(--bad); } .ic-info { color:var(--brand); }
+  .checks .ic svg.i { width:19px; height:19px; }
+  .box > b svg.i, .box b:first-child svg.i { vertical-align:-0.2em; }
+  .switch { border:2px solid var(--teller); background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+  .switch .sw-head b { white-space:nowrap; }
+  .switch .sw-head { display:flex; gap:8px; align-items:flex-start; margin-bottom:10px; } .switch .sw-head svg.i { color:var(--teller); margin-top:3px; }
+  .switch table { margin-bottom:10px; } .switch th:first-child { width:110px; }
+  .principles label { padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer; align-items:center; }
+  .principles label:has(input:checked) { border-color:var(--ok); background:var(--ok-soft); }
+  .principles input[type=checkbox] { width:24px; height:24px; min-width:24px; margin:0; accent-color:var(--ok); cursor:pointer; flex:0 0 24px; }
+  .chart { width:100%; height:auto; }
+  .legend { font-size:12.5px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap; margin-top:2px; }
+  .legend i { display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:-1px; margin-right:4px; }
+
+  .src { font-size:12.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:24px; padding-top:10px; }
+  .disclaimer { font-size:12px; color:var(--muted); margin-top:6px; }
+  .empty { padding:40px; text-align:center; color:var(--muted); }
+
+  @media print {
+    @page { margin:14mm; }
+    body { background:#fff; font-size:12.5px; }
+    .topbar, aside, .tabs, .actions, .no-print { display:none !important; }
+    .layout { display:block; padding:0; max-width:none; }
+    .report { border:0; padding:0; }
+    body.print-all .report { display:block; page-break-after:always; }
+    .memo-print { display:block; }
+    details.flash > div { display:block; }
+    a { color:inherit; text-decoration:none; }
+    .tile, .box, .rec, .flash, table, .script, svg { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJ4AAAAjCAYAAABl0bPQAAADvUlEQVR42u1cL1QUQRj/zT3eGbhEweAVLRqkSIGA5SwSoBwFghavaMCCBcJZJGvhkgEKJoIWLRAwWTBAonDBK1okaBmDe899w87sN39vhe/33ry73f12d2buN9/f3RNSSjAYqVHjKWAw8RhMPA1mALBtZnhjzEJWar4LnkbGKEytZC3IiEU8SZQZZyIyKBDEdIovkdgcM6JHtU2DOWZNyCBrvJhkYU3IGm8khGItSMdkwGvdUKyQBLB/FRPIy5YTtWow5aa2XLIAyhaCJMhS+nFTI6+Oaz137FvJfVcJY6hnx84Kjs2VnLtvGI/OpdKSuhbJzK5bym+XHK8r2w3Hfm17jEkGdBV0C6Ch3K9r0R/KnPzyGOuch2IZT6XxTgIEJDHxfoSko5rCPPrZ/a57KAZZ0P982zCc+yS0y2RLvA2i3DvN/lnN/n4EHzPfVDyMSDqhaTY40yzMQYFmW89a19MHf2mwWltIWDKTFoNQZdtEuWTRu+O9Y2m6TxayU8r2ubLdRXytOwvgkKBs2lT+hCqZ/Qawl9u3q8isGDrSRDUR07x+tpB9nmhsLWW7U9LftwW/cfKotg5gAcC8xsk1BQ/9K0Y6Cr7kvj8i+mobln60Gpl+tEjlCACPFZ9TDVxuuRDP1SR+APCzAknisrRHJ3Gi23Y+p4mVn2sW1+wDWHQc74JGbmC4xmmqPN7QnE4UTNqdipnZ3girKyKQ3FLm4thgL7turyQwos5XfiH8iPU8nsmpXMp14nuBzHGFzKyttrsL4GtCbacSoaWYwb5mwZ5q+n4UoK+CIDdhM9ZagIlqa/wO11RMbGwVBD8mHAUknYv2PFe0XNNQWRhiM/tcRBpNLWKXzLoWwUbZuc3I6ZN8myKke0JqrclApIOSxjAtmLxWXMs+dyLP67DtKuN9UBbxjkX64deIzm4qFJnKBSUFVJb3kwTy7BpymDEjbpODLyK+riAJi0CkfEhgUMEUibr6XzmYFklwO4pKXZcR0keuFml19ipWmwUuFub3HP0aSZAfEq55RUhnXSKsEWy5C2YqYmbrWTBRRJYXxGs0HMiX0n8dtpMRkfANIr3eKBzU6+F/YgaoUeUKLlZf5AiT4744JvqH85pjB/j3mNRTAM+U469D5/EEMecjK2Zmfd2JHfx90PJeRcjni9ueMvehf886eq22yBx3CJ3oBwhWXHNrDQ+iTDs+PQ3PnOFBRckriNUs4fN6Y0hTwC/4XE60Mt9+E4RSnoj8N2WSSceIVatl7cYA/00Zg4nHYOjwBzkqEFPUp2O0AAAAAElFTkSuQmCC" alt="IBK기업은행"><span class="sep"></span>상품 상담 가이드</h1>
+  <span class="sub">상품 하나를 고르면 직원 교육용 · 고객 안내용 · 창구 영업용 보고서가 자동으로 만들어집니다</span>
+  <span class="date" id="checked"></span>
+</div>
+
+<div class="layout">
+  <aside>
+    <h2>① 상품 고르기</h2>
+    <div class="filters" id="filters"></div>
+    <ul class="plist" id="plist"></ul>
+  </aside>
+
+  <main>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-k="edu"><b><span data-icon="edu"></span>직원 교육용</b><span>상품 구조 · 비교 · 퀴즈 · 롤플레이</span></button>
+      <button class="tab" data-k="guide"><b><span data-icon="guide"></span>고객 안내용</b><span>쉬운 설명 · 내 이자/혜택 계산 · 주의사항</span></button>
+      <button class="tab" data-k="teller"><b><span data-icon="teller"></span>창구 영업용</b><span>고객 맞춤 적합성 · 화법 · 교차판매 · 점검표</span></button>
+    </div>
+    <div class="actions">
+      <button class="btn" id="print-one"><span data-icon="printer"></span>이 보고서 PDF 저장/인쇄</button>
+      <button class="btn ghost" id="print-all"><span data-icon="files"></span>보고서 3종 한 번에 PDF</button>
+    </div>
+    <article class="report active" id="rep-edu"></article>
+    <article class="report" id="rep-guide"></article>
+    <article class="report" id="rep-teller"></article>
+  </main>
+</div>
+
+<script>
+const CATALOG =
+{
+  "bank": "IBK기업은행",
+  "checked_at": "2026-11-06",
+  "source_note": "IBK기업은행 공식 홈페이지(www.ibk.co.kr) 상품 상세 페이지에서 2026-11-06에 직접 확인한 내용만 옮겼습니다. 금리·혜택은 바뀔 수 있으므로 실제 안내 전 원문을 다시 확인해야 합니다. 금리는 모두 세전 연%입니다.",
+  "products": [
+    {
+      "id": "DEP-01",
+      "category": "예적금",
+      "name": "IBK D-day적금",
+      "type": "자유적립식 적금",
+      "one_liner": "생일·결혼·이사 등 필요한 날(D-day)과 목표금액을 직접 정해 모으는 적금",
+      "target": "실명의 개인(개인사업자·외국인비거주자 제외), 1인 최대 3계좌",
+      "term": "1개월 이상 12개월 이내(일 단위)",
+      "amount": "최소 1만원 이상 월 20만원 이내(천원 단위)",
+      "rates": {
+        "기본(약정이율)": {
+          "1개월이상 6개월미만": 2.7,
+          "6개월이상 12개월미만": 2.9,
+          "12개월": 3.1
+        },
+        "최고": 4.6
+      },
+      "preferential": [
+        "목표달성 축하금리 연 1.0%p: 당행 입출금식 계좌에서 자동이체로 3회 이상 납입하고 만기일 전일까지 목표금액 이상 납입",
+        "최초 거래고객 우대금리 연 0.5%p: 실명등록일로부터 3개월 이내이거나 가입 직전월 기준 6개월간 총 수신 평잔 0원"
+      ],
+      "features": [
+        "이자 만기일시지급",
+        "최고금리 연 4.60% 적용 시 월 20만원·12개월 가정 예상이자 59,800원(세전)"
+      ],
+      "cautions": [
+        "중도해지 시 경과비율에 따라 기본금리의 5~80%만 적용(최저 연 0.1%)",
+        "압류·가압류·질권설정 시 지급 제한"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "텔레뱅킹, i-ONE뱅크, IBK 모바일브랜치(비대면)",
+      "doc": "(상품설명서) IBK D-day적금 제2026-6927호(20260828~20270826)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=121&PDCD=0113&WHBN_VCD=***********&ALL_PDCD=01211210113"
+    },
+    {
+      "id": "DEP-02",
+      "category": "예적금",
+      "name": "IBK평생한가족통장[적금_자유적립식]",
+      "type": "자유적립식 적금",
+      "one_liner": "급여이체·자동이체·대출 등 IBK 주거래 고객에게 우대금리를 주는 적금",
+      "target": "실명의 개인",
+      "term": "1년, 2년, 3년",
+      "amount": "1만원 이상, IBK평생한가족통장(적립식) 합산 1인당 월 200만원 이하, 계좌 수 제한 없음",
+      "rates": {
+        "기본(약정이율)": {
+          "12개월": 2.75,
+          "24개월": 2.9,
+          "36개월": 2.9
+        },
+        "최고": 3.3
+      },
+      "preferential": [
+        "고객별 우대 최고 연 0.1%p: 최초거래고객 / 재예치 고객(예·적금 만기해지 후 1개월 이내 가입) / 장기거래 고객(실명등록 3년 경과)",
+        "주거래 우대 연 0.3%p: 계약기간 중 다음 중 2개 이상 충족 후 만기해지 — ①급여이체(월 50만원 이상) 또는 연금수급 3개월 이상 ②지정 입출금 통장 평잔 100만원 이상(만기 직전 3개월) ③아파트관리비 또는 지로·공과금 자동이체(월 3건 이상) 3개월 이상 ④IBK 신용·체크카드 월 30만원 이상 3개월 이상 ⑤IBK 개인대출 보유 이력 ⑥본인 적립식 상품 월 10만원 이상 자동이체 3개월 이상 ⑦ISA 적립누계 100만원 이상"
+      ],
+      "features": [
+        "결혼·취업·출산·대학입학·주택구입·사망 시 증빙 제출하면 특별중도해지금리(경과기간 기본이자율) 적용",
+        "최고금리 연 3.15% 적용 시 월 50만원·12개월 가정 예상이자 102,375원(세전)"
+      ],
+      "cautions": [
+        "만기 전 해지 시 낮은 중도해지이율 적용",
+        "우대금리는 만기해지 시 조건 충족해야 제공"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "영업점, 인터넷뱅킹, 텔레뱅킹, i-ONE뱅크, IBK 모바일브랜치, 키오스크",
+      "doc": "(상품설명서) IBK평생한가족통장(적금) 제2026-6904호(20260827~20270831)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=121&PDCD=0102&WHBN_VCD=***********&ALL_PDCD=01211210102"
+    },
+    {
+      "id": "DEP-03",
+      "category": "예적금",
+      "name": "IBK평생한가족통장(중금채)",
+      "type": "일시예치식 중소기업금융채권(복리채)",
+      "one_liner": "주거래 고객 우대가 붙는 목돈 예치용 중금채, 1인당 1억원 한도",
+      "target": "실명의 개인",
+      "term": "1년, 2년, 3년",
+      "amount": "최소 100만원 이상, IBK평생한가족통장(중금채·정기예금) 합산 1인당 1억원 이내, 계좌 수 제한 없음",
+      "rates": {
+        "기본금리/적용금리": {
+          "12개월": "2.45 / 3.80",
+          "24개월": "2.30 / 3.80",
+          "36개월": "2.25 / 3.80"
+        },
+        "최고": 4.0
+      },
+      "preferential": [
+        "고객별 우대 최고 연 0.05%p: 최초거래 / 재예치 / 장기거래(실명등록 3년 경과) 고객",
+        "주거래 우대 연 0.15%p: 적금(DEP-02)과 같은 주거래 실적조건 ①~⑦ 중 2개 이상 충족 후 만기해지"
+      ],
+      "features": [
+        "결혼·취업·출산 등 생애 이벤트 특별중도해지금리",
+        "최고 연 4.0% 적용 시 5,000만원·12개월 가정 예상이자 2,000,000원(세전)"
+      ],
+      "cautions": [
+        "예금자보호법에 따라 보호되지 않음(채권)",
+        "중도해지 시 경과비율별 낮은 금리 적용"
+      ],
+      "protection": "예금자보호 대상 아님",
+      "channels": "영업점, 인터넷뱅킹, i-ONE뱅크, IBK 모바일브랜치",
+      "doc": "IBK평생한가족통장(복리맞춤채권)_상품설명서 제2026-4442호(20260601~20270528)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=51&PDTM_CD=183&PDCD=0078&WHBN_VCD=***********&ALL_PDCD=01511830078"
+    },
+    {
+      "id": "DEP-04",
+      "category": "예적금",
+      "name": "IBK더굴리기통장(정기예금)",
+      "type": "일시예치식 정기예금",
+      "one_liner": "우대조건 없이 간단한 비대면 전용 정기예금",
+      "target": "실명의 개인(개인사업자·외국인비거주자 제외)",
+      "term": "6개월 이상 3년 이하(월 단위)",
+      "amount": "최소 100만원 이상, 금액 제한 없음",
+      "rates": {
+        "기본(약정이율)": {
+          "6개월": 3.49,
+          "12개월": 3.52,
+          "24개월": 3.3,
+          "36개월": 3.2
+        },
+        "최고": 3.52
+      },
+      "preferential": [
+        "우대금리 없음(조건 없이 기본금리 적용)"
+      ],
+      "features": [
+        "만기자동해지서비스(신청 시 만기일에 세후 원리금 자동입금)",
+        "가입 후 1년간 사이버문화강좌 무료"
+      ],
+      "cautions": [
+        "비대면 전용",
+        "중도해지 시 낮은 금리 적용"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "인터넷뱅킹, 텔레뱅킹, i-ONE뱅크, IBK 모바일브랜치(비대면 전용)",
+      "doc": "IBK더굴리기통장(실세금리정기예금)_상품설명서 제2026-4129호(20260520~20270518)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=131&PDCD=0130&WHBN_VCD=***********&ALL_PDCD=01211310130"
+    },
+    {
+      "id": "DEP-05",
+      "category": "예적금",
+      "name": "IBK더굴리기통장(중금채)",
+      "type": "일시예치식 중소기업금융채권",
+      "one_liner": "우대조건 없이 높은 기본금리를 주는 비대면 전용 중금채",
+      "target": "실명의 개인(개인사업자·외국인비거주자 제외)",
+      "term": "1년 이상 3년 이하(월 단위)",
+      "amount": "최소 100만원 이상(10만원 단위), 금액·계좌 수 제한 없음",
+      "rates": {
+        "기본(약정이율)": {
+          "12개월": 3.79,
+          "24개월": 3.57,
+          "36개월": 3.47
+        },
+        "최고": 3.79
+      },
+      "preferential": [
+        "우대금리 없음"
+      ],
+      "features": [
+        "만기자동해지서비스",
+        "가입 후 1년간 사이버문화강좌 무료"
+      ],
+      "cautions": [
+        "예금자보호법에 따라 보호되지 않음(채권) — 정기예금(DEP-04)과 비교 설명 필요",
+        "중도해지 시 낮은 금리 적용"
+      ],
+      "protection": "예금자보호 대상 아님",
+      "channels": "인터넷뱅킹, 텔레뱅킹, i-ONE뱅크, IBK 모바일브랜치(비대면 전용)",
+      "doc": "IBK더굴리기통장(중소기업금융채권)_상품설명서 제2026-4130호(20260520~20270518)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=51&PDTM_CD=183&PDCD=0082&WHBN_VCD=***********&ALL_PDCD=01511830082"
+    },
+    {
+      "id": "DEP-06",
+      "category": "예적금",
+      "name": "IBK적립식중금채(개인)",
+      "type": "자유적립식 중소기업금융채권(단리채)",
+      "one_liner": "월 1만원부터 1천만원까지 자유롭게 적립하는 중금채",
+      "target": "개인고객(외국인 비거주자 제외), 1인 1계좌",
+      "term": "1년 ~ 3년(월 단위)",
+      "amount": "최저 1만원 이상, 월 적립한도 1천만원 이내(1만원 단위)",
+      "rates": {
+        "기본(약정이율)": {
+          "12개월이상 24개월미만": 2.25,
+          "24개월이상 36개월미만": 2.35,
+          "36개월": 2.4
+        },
+        "최고": 2.4
+      },
+      "preferential": [
+        "우대금리 없음"
+      ],
+      "features": [
+        "비과세종합저축으로 가입 가능(세법 요건 충족 시)"
+      ],
+      "cautions": [
+        "예금자보호법에 따라 보호되지 않음(채권)",
+        "은행 신규한도 소진 시 가입 제한 가능",
+        "100만원 초과 납입 가능한 자유적립식은 비대면으로 분기당 3개까지, 가입 후 3영업일 이내 비대면 해지 불가"
+      ],
+      "protection": "예금자보호 대상 아님",
+      "channels": "영업점, 인터넷뱅킹, i-ONE뱅크",
+      "doc": "IBK적립식중금채_상품설명서 제2026-7844호(20261002~20271001)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=51&PDTM_CD=188&PDCD=0003&WHBN_VCD=***********&ALL_PDCD=01511880003"
+    },
+    {
+      "id": "DEP-07",
+      "category": "예적금",
+      "name": "주택청약종합저축",
+      "type": "자유적립식(청약)",
+      "one_liner": "국민주택·민영주택 청약을 위해 가입하는 저축(전 금융기관 1인 1계좌)",
+      "target": "국민인 개인(국내거소 재외동포 포함) 또는 외국인 거주자",
+      "term": "가입일부터 입주자로 선정된 날까지",
+      "amount": "매월 2만원~50만원 자유 납입(잔액 1,500만원까지는 회차당 50만원 초과 가능, 선납은 24회차까지)",
+      "rates": {
+        "기본(약정이율)": {
+          "1개월이하": 0.0,
+          "1개월초과 1년미만": 2.3,
+          "1년이상 2년미만": 2.8,
+          "2년이상": 3.1
+        },
+        "최고": 3.1
+      },
+      "preferential": [
+        "우대금리 없음"
+      ],
+      "features": [
+        "소득공제: 총급여 7천만원 이하 무주택 세대주(및 배우자), 연 납입액 300만원 한도의 40%(최고 120만원), 과세연도 말일까지 무주택확인서 제출",
+        "기존 청약예금·부금·저축에서 전환신규 가능"
+      ],
+      "cautions": [
+        "소득공제 받은 뒤 5년 이내 해지(예외 있음)하거나 85㎡ 초과 주택 당첨 시 추징",
+        "당첨된 통장은 재사용 불가"
+      ],
+      "protection": "예금자보호법으로 보호되지 않으나 주택도시기금 조성재원으로 정부가 별도 관리",
+      "channels": "영업점, 인터넷뱅킹, 텔레뱅킹, i-ONE뱅크, IBK 모바일브랜치",
+      "doc": "주택청약종합저축_상품설명서 제2025-7680호(20251111~20261110) — 설명서 유효기간이 곧 끝나므로 새 설명서 확인 필요",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=129&PDCD=0101&WHBN_VCD=***********&ALL_PDCD=01211290101"
+    },
+    {
+      "id": "DEP-08",
+      "category": "예적금",
+      "name": "IBK청년미래적금",
+      "type": "자유적립식 적금(정책상품)",
+      "one_liner": "청년의 자산형성을 지원하는 정책 적금 — 정부기여금과 비과세 혜택 제공",
+      "target": "가입시점 만 19~34세(병역기간 최대 6년 차감) 실명 개인 거주자로 개인소득(총급여 7,500만원 이하 등)·가구소득(기준 중위소득 200% 이하)·금융소득종합과세 요건을 충족하고 서민금융진흥원 심사를 통과한 자, 전 금융기관 1인 1계좌",
+      "term": "3년",
+      "amount": "월 0원 이상 50만원 이내(천원 단위), 연간 납입한도 600만원",
+      "rates": {
+        "기본(약정이율)": {
+          "36개월": 5.0
+        },
+        "최고": 8.0
+      },
+      "preferential": [
+        "우대금리 최대 연 3.0%p(계약기간 중 조건 충족 후 만기해지 시)",
+        "소득 우대 연 0.5%p: 가입신청 시 총급여 3,600만원 이하 또는 종합소득 2,600만원 이하",
+        "청년재무상담 이수 연 0.2%p: 만기월 3개월 전 말일까지 서민금융진흥원 청년재무상담 이수",
+        "급여이체 연 1.0%p: IBK 입출식 계좌로 월 50만원 이상 급여이체 24개월 이상",
+        "카드이용 연 0.5%p: IBK 신용·체크카드 월평균 30만원 이상 이용하고 만기까지 보유",
+        "IBK 주택청약 보유 연 0.5%p: 만기 시점에 IBK 주택청약종합저축 또는 청년 주택드림 청약통장 보유",
+        "중소기업 재직자 우대 연 0.3%p: 가입유형이 중소기업 재직자 또는 신규취업자(우대형)",
+        "연계가입 또는 최초고객 연 0.5%p: 청년도약계좌 특별중도해지 후 연계가입 또는 최초고객"
+      ],
+      "features": [
+        "정부기여금: 일반형 납입액의 6%, 우대형(중소기업 재직자·중소기업 신규취업자·연매출 1억원 이하 소상공인) 12%",
+        "비과세: 조세특례제한법 요건 충족 시(중도해지 시 미적용)",
+        "최고금리 연 8.0% 적용 시 월 50만원·36개월 가정 예상이자 2,220,000원(세전)",
+        "2026년 하반기 일정: 가입신청 10.7~10.16(i-ONE뱅크) → 심사 10.19~11.13 → 계좌개설 11.16~11.27"
+      ],
+      "cautions": [
+        "가입신청과 서민금융진흥원 심사를 거쳐 정해진 기간에만 계좌개설 가능(2026년 하반기 계좌개설 11.16~11.27)",
+        "중도해지 시 비과세·정부기여금 혜택이 없음(특별중도해지 사유 제외), 중도해지이율은 기본금리의 5~80%(최저 연 0.1%)",
+        "청년도약계좌 보유자는 정해진 기간 안에 도약계좌를 특별중도해지해야 연계가입 가능",
+        "외국인은 정부기여금 미지급, 정부기여금은 정책 변경 시 중단될 수 있음"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "영업점, i-ONE뱅크(가입신청은 i-ONE뱅크에서만)",
+      "doc": "(상품설명서) IBK청년미래적금 제2026-7931호(20261007~20270927)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=121&PDCD=0135&WHBN_VCD=***********&ALL_PDCD=01211210135"
+    },
+    {
+      "id": "DEP-09",
+      "category": "예적금",
+      "name": "IBK중소기업재직자우대저축",
+      "type": "자유적립식 적금",
+      "one_liner": "중소기업 재직자의 장기 재직과 목돈 마련을 돕는 적금(회사 공제와 1:5 매칭)",
+      "target": "중소벤처기업진흥공단이 『중소기업재직자 우대저축공제』 가입을 승인한 실명 개인(개인사업자 제외, 외국인 가입 가능)",
+      "term": "3년, 5년",
+      "amount": "월 10만원 이상 50만원 이내, 월 1회 납입, 공단이 승인한 금액으로 적립(회사:재직자 = 1:5)",
+      "rates": {
+        "기본(약정이율)": {
+          "36개월": 2.5,
+          "60개월": 2.5
+        },
+        "최고": 4.5
+      },
+      "preferential": [
+        "우대금리 최고 연 2.0%p(조건 충족 후 만기해지 시)",
+        "급여이체 최고 연 1.0%p: 당행 입출식 통장으로 월 50만원 이상 급여이체가 연평균 6개월 이상",
+        "지로·공과금 자동이체 최고 연 0.5%p: 월 2건 이상 자동이체가 연평균 6개월 이상",
+        "카드이용 최고 연 0.5%p: 당행 신용·체크카드 이용이 연평균 200만원 이상이고 만기까지 보유"
+      ],
+      "features": [
+        "회사가 공단 공제에 5만원 납입하면 재직자 가입금액은 25만원으로 정해짐(공식 예시)",
+        "최고금리 연 4.5% 적용 시 월 30만원·60개월 가정 예상이자 2,058,361원(세전)"
+      ],
+      "cautions": [
+        "중소벤처기업진흥공단의 가입 승인이 있어야 가입 가능",
+        "중도해지 시 기본이자율의 5~80%만 적용(최저 연 0.1%)"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "영업점, i-ONE뱅크",
+      "doc": "(상품설명서) IBK중소기업재직자우대저축 제2026-7379호(20260914~20270910)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=121&PDCD=0130&WHBN_VCD=***********&ALL_PDCD=01211210130"
+    },
+    {
+      "id": "DEP-10",
+      "category": "예적금",
+      "name": "IBK부모급여우대적금",
+      "type": "자유적립식 적금",
+      "one_liner": "부모급여·아동수당을 받는 가정에 우대금리를 주는 1년 적금",
+      "target": "실명의 개인 1인 1계좌(개인사업자·외국인 비거주자 제외)",
+      "term": "1년",
+      "amount": "신규 1만원 이상, 매월 50만원 이하(만원 단위), 총 적립 600만원",
+      "rates": {
+        "기본(약정이율)": {
+          "12개월": 2.5
+        },
+        "최고": 6.5
+      },
+      "preferential": [
+        "우대금리 최대 연 4.0%p(조건 충족 후 만기해지 시, 부모-자녀 가족등록 시 실적 합산)",
+        "부모급여·아동수당 연 2.0%p: 부모 또는 자녀 명의 당행 입출금 통장으로 6개월 이상 입금(매월 20·25일, 10만원 이상)",
+        "주택청약 연 1.0%p: 부모 또는 자녀 명의로 주택청약종합저축을 신규해 만기까지 보유",
+        "한부모가족 연 1.0%p: 부모 또는 자녀 명의 한부모가족 증명서 제출"
+      ],
+      "features": [
+        "부모와 자녀 1:1 가족등록 시 실적 합산(가족관계 서류 지참해 영업점 방문)",
+        "최고금리 연 6.5% 적용 시 월 50만원·12개월 가정 예상이자 210,760원(세전)"
+      ],
+      "cautions": [
+        "중도해지 시 기본금리의 5~80%만 적용(최저 연 0.1%)",
+        "우대금리는 만기해지 시 조건을 충족해야 제공"
+      ],
+      "protection": "예금자보호 대상(1인당 1억원까지, 다른 보호상품과 합산)",
+      "channels": "영업점, 텔레뱅킹, i-ONE뱅크",
+      "doc": "(상품설명서) IBK부모급여우대적금 제2026-1127호(20260212~20270219)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=121&PDCD=0124&WHBN_VCD=***********&ALL_PDCD=01211210124"
+    },
+    {
+      "id": "DEP-11",
+      "category": "예적금",
+      "name": "청년 주택드림 청약통장",
+      "type": "자유적립식(청약)",
+      "one_liner": "무주택 청년 전용 청약통장 — 조건 충족 시 최대 연 4.5%와 비과세",
+      "target": "만 19~34세(병역기간 인정) 무주택 거주자로 직전 과세기간 연소득 5천만원 이하(또는 현역병 등), 전 금융기관 1인 1계좌",
+      "term": "가입일부터 해지일까지",
+      "amount": "매월 2만원~100만원(잔액 1,500만원까지는 회차당 100만원 초과 납입 가능, 선납 24회차까지)",
+      "rates": {
+        "기본이율 / 청년 주택드림 이율": {
+          "1개월초과 1년미만": "2.3 / 3.7",
+          "1년이상 2년미만": "2.8 / 4.2",
+          "2년이상 10년이내": "3.1 / 4.5"
+        },
+        "최고": 4.5
+      },
+      "preferential": [
+        "청년 우대이율: 가입 2년 이상(청약당첨 해지는 2년 미만도 인정)일 때, 가입 후 10년 내 납입원금 5천만원 한도로 무주택기간 동안 최대 연 4.5% 적용",
+        "기간별 우대이율: 1개월 초과 1년 미만 3.7%, 1년 이상 2년 미만 4.2%, 2년 이상 10년 이내 4.5%(10년 초과 3.1%)"
+      ],
+      "features": [
+        "소득공제: 총급여 7천만원 이하 무주택 세대주(및 배우자), 연 300만원 한도 납입액의 40%(최고 120만원)",
+        "비과세: 총급여 3,600만원 이하 근로소득자 등 무주택 세대주(및 배우자), 가입 2년 이상 시 이자소득 500만원 한도",
+        "청약 당첨 시 계약금 납부 목적으로 1회 일부 인출 가능",
+        "기존 주택청약종합저축에서 전환신규 가능(납입 인정 회차·기간 유지, 전환원금은 우대이율 미적용)"
+      ],
+      "cautions": [
+        "변동금리로 정부 고시에 따라 바뀔 수 있음",
+        "소득공제 받은 뒤 5년 이내 해지(예외 있음)하거나 85㎡ 초과 주택 당첨 시 추징",
+        "금융소비자보호법 적용 대상이 아님"
+      ],
+      "protection": "예금자보호법으로 보호되지 않으나 주택도시기금 조성재원으로 정부가 관리",
+      "channels": "영업점, i-ONE뱅크(현역병 등은 영업점)",
+      "doc": "청년 주택드림 청약통장 상품설명서 제2026-4970호(20260619~20270614)",
+      "source_url": "https://www.ibk.co.kr/depobiz/depoDetailNew.ibk?pageId=FM01010100&PDLN_CD=01&PDGR_CD=21&PDTM_CD=129&PDCD=0102&WHBN_VCD=***********&ALL_PDCD=01211290102"
+    },
+    {
+      "id": "CRD-01",
+      "category": "카드",
+      "name": "일상의 기쁨카드(신용)",
+      "type": "신용카드(BC)",
+      "one_liner": "쿠팡·편의점·커피·영화 등 생활 할인형 신용카드",
+      "target": "개인(가족카드 발급 가능)",
+      "annual_fee": "UnionPay 10,000원 / VISA 12,000원",
+      "requirement": "전월 국내 가맹점 이용금액 50만원 이상(제세공과금·관리비·등록금·상품권·교통요금 제외). 사용등록일~다음달 말까지는 실적 무관 통합한도 2만원",
+      "benefits": [
+        "버스·지하철 건당 200원 할인(후불교통, 월 최대 2천원)",
+        "전 주유소 리터당 60원 할인(1일 1회, 월 2회, 회당 10만원 한도)",
+        "GS25·CU·세븐일레븐·올리브영 10% 할인(1일 1회, 월 2회, 1회 1만원 한도)",
+        "이마트·홈플러스·롯데마트 5% 할인(월 1회, 1회 10만원 한도)",
+        "쿠팡·티몬·위메프 20% 할인(1일 1회, 월 2회, 1회 2만원 한도)",
+        "CGV·롯데시네마·메가박스 1만원 할인(월 1회, 연 12회, 1만원 이상 결제)",
+        "주요 커피전문점 20% 할인(1일 1회, 월 2회, 1회 2만원 한도)",
+        "금융우대(결제계좌가 IBK 입출식일 때): 전자금융 이체수수료·당행 ATM 이체수수료 면제, 타행 ATM 출금수수료 월 10회 면제, 환전 환율 70% 우대",
+        "주요 놀이공원 할인(월 1회, 연 2회)"
+      ],
+      "limits": "월간 통합할인한도: 전월 50만원↑ 2만원 / 70만원↑ 3만원 / 100만원↑ 4만원(금융우대·놀이공원 제외)",
+      "cautions": [
+        "무이자할부·상품권 이용금액은 할인 미제공",
+        "간편결제는 할인 제공되지 않을 수 있음",
+        "부가서비스는 출시 후 3년 이상 유지되나 법정 사유 시 변경 가능"
+      ],
+      "doc": "준법감시인 심의필 제2026-6584호(2026.08.18) [유효기간 2029.08.09], 여신금융협회 심의필 제2022-C1a-07179호",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=309&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113090001"
+    },
+    {
+      "id": "CRD-02",
+      "category": "카드",
+      "name": "일년의 설렘카드",
+      "type": "신용카드(BC)",
+      "one_liner": "1년 이용금액에 따라 연간 5~70만원 정액 캐시백",
+      "target": "개인(가족카드 발급 가능)",
+      "annual_fee": "UnionPay 10,000원 / VISA 12,000원",
+      "requirement": "정액캐시백은 발급일 기준 12개월 국내외 이용금액(본인+가족 합산, 제세공과금·관리비·등록금·상품권·교통요금 제외). 놀이공원·금융우대는 전월 국내 50만원 이상",
+      "benefits": [
+        "연간 이용금액별 정액캐시백: 500만원↑ 5만원 / 1천만원↑ 10만원 / 2천만원↑ 20만원 / 3천만원↑ 30만원 / 4천만원↑ 50만원 / 5천만원↑ 70만원",
+        "연간 500만원 미만 또는 발급 1년 전 탈회 시 이용금액의 0.1% 캐시백(1천원 미만 미지급)",
+        "캐시백은 발급일 기준 13개월이 지난 다음 영업일에 지정계좌 입금",
+        "금융우대(IBK 입출식 결제계좌): 이체·ATM 수수료 면제, 환전 70% 우대",
+        "주요 놀이공원 할인(월 1회, 연 2회)"
+      ],
+      "limits": "실물카드와 모바일 전용카드는 이용금액 합산 불가",
+      "cautions": [
+        "연간 사용액이 큰 고객에게 맞음 — 예상 연간 사용액을 꼭 확인",
+        "캐시백 지급 후 승인취소 시 차액 청구"
+      ],
+      "doc": "준법감시인 심의필 제2025-6025호(2025.09.08) [유효기간 2028.09.07]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=310&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113100001"
+    },
+    {
+      "id": "CRD-03",
+      "category": "카드",
+      "name": "DailyWith 데일리위드 카드",
+      "type": "신용카드(BC)",
+      "one_liner": "6대 생활영역 1% 기본 캐시백 + 가장 많이 쓴 영역 1% 추가 캐시백",
+      "target": "개인(가족카드 발급 가능)",
+      "annual_fee": "BC 10,000원 / UnionPay 12,000원 / Master 12,000원",
+      "requirement": "전월 국내외 가맹점 이용금액 50만원 이상(사용등록일~다음달 말까지는 실적 무관)",
+      "benefits": [
+        "6대 생활영역(음식점·온라인쇼핑·마트/편의점·통신비 자동이체·병원비·교통/주유) 1% 기본캐시백, 한도 없음(주유는 월 50만원까지 인정)",
+        "전월 가장 많이 쓴 영역 1% 추가캐시백(한도 10만원)",
+        "예시: 월 100만원 사용 시 기본 1만원 + 추가 5천원 = 총 1만5천원(공식 페이지 예시)",
+        "캐시백은 다음달 21일 결제계좌 입금"
+      ],
+      "limits": "음식점·마트·편의점·병원·교통은 오프라인 결제만 인정(온라인·간편결제 제외)",
+      "cautions": [
+        "무이자할부·제세공과금·관리비·등록금·상품권은 캐시백 제외",
+        "캐시백 지급일 전 탈회 시 추가캐시백 미제공"
+      ],
+      "doc": "준법감시인 심의필 제2026-5637호(2026.07.15) [유효기간 2029.06.28]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=328&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113280001"
+    },
+    {
+      "id": "CRD-04",
+      "category": "카드",
+      "name": "일상의 기쁨카드(체크)",
+      "type": "체크카드",
+      "one_liner": "연회비 없는 생활 할인형 체크카드(신용 버전의 체크카드형)",
+      "target": "개인(가족카드 발급 가능)",
+      "annual_fee": "UnionPay 0원 / Master 0원 (UnionPay 일시중단)",
+      "requirement": "전월 국내 가맹점 이용금액 30만원 이상. 사용등록일~다음달 말까지는 통합한도 5천원 기본 제공",
+      "benefits": [
+        "버스·지하철 건당 100원 할인(월 최대 1천원)",
+        "편의점(GS25·CU·세븐일레븐)·올리브영 5% 할인(통합 1일 1회, 월 2회, 1회 1만원 한도)",
+        "쿠팡·티몬·위메프 10% 할인(1일 1회, 월 2회, 1회 1만원 한도)",
+        "CGV·롯데시네마·메가박스 4천원 할인(월 1회, 연 12회)",
+        "주요 커피전문점 10% 할인(1일 1회, 월 2회, 1회 1만원 한도)",
+        "금융우대(IBK 입출식 결제계좌): 이체·ATM 수수료 면제, 환전 70% 우대",
+        "주요 놀이공원 할인(월 1회, 연 2회, 발급월 제외)"
+      ],
+      "limits": "월간 통합할인한도: 전월 30만원↑ 5천원 / 50만원↑ 1만원",
+      "cautions": [
+        "간편결제는 할인 제공되지 않을 수 있음"
+      ],
+      "doc": "준법감시인 심의필 제2026-0018호(2026.01.02) [유효기간 2026.12.29]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=309&PDCD=0002&WHBN_VCD=***********&ALL_PDCD=12113090002"
+    },
+    {
+      "id": "CRD-05",
+      "category": "카드",
+      "name": "이지캐시백 체크카드",
+      "type": "체크카드",
+      "one_liner": "전 가맹점 0.2% 캐시백, 점심·저녁 시간엔 3배(0.6%)",
+      "target": "개인",
+      "annual_fee": "BC(국내전용) 0원 / Master 0원",
+      "requirement": "기본캐시백은 실적·한도 없음. 타임캐시백·금융우대는 전월 국내외 30만원 이상",
+      "benefits": [
+        "국내외 전 가맹점 0.2% 기본캐시백(실적 조건·한도 없음)",
+        "점심(12~14시)·저녁(18~20시) 국내 전 가맹점 0.6% 타임캐시백(한도 없음, 기본캐시백과 중복 아님)",
+        "금융우대(IBK 입출식 결제계좌 + 전월 30만원): 타행 이체수수료 면제, 국내 전 은행 ATM 출금수수료 월 10회 면제, 환전 70% 우대",
+        "캐시백은 다음달 20일 결제계좌 입금"
+      ],
+      "limits": "",
+      "cautions": [
+        "제세공과금·관리비·등록금·상품권·학부모 부담금은 실적·캐시백 제외"
+      ],
+      "doc": "준법감시인 심의필 제2025-2768호(2025.04.16) [유효기간 2028.04.15]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=323&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113230001"
+    },
+    {
+      "id": "CRD-06",
+      "category": "카드",
+      "name": "부자되세요 더 마일리지 카드(체크)",
+      "type": "체크카드(VISA)",
+      "one_liner": "체크카드로 대한항공 마일리지 적립",
+      "target": "개인(가족카드 발급 가능)",
+      "annual_fee": "VISA 0원",
+      "requirement": "전월 국내 가맹점 30만원 이상(5개 온라인몰·제세공과금·상품권·교통 제외). 카드 수령일~다음달 말까지는 실적 무관(놀이공원 제외)",
+      "benefits": [
+        "SUPER 적립: SSG닷컴·롯데ON·엘롯데·AK몰·갤러리아몰 1,000원당 1마일",
+        "일반 적립: 국내 가맹점 3,000원당 1마일(건당 3만원 이상, 각각 월 이용금액 100만원까지)",
+        "5개 온라인몰 5% 청구할인(몰별 월 1회, 건당 3만원 이상, 몰별 월 1만원 한도)",
+        "CGV·메가박스·롯데시네마 2천원 청구할인(월 1회)",
+        "주요 놀이공원 할인(월 1회, 연 2회)"
+      ],
+      "limits": "",
+      "cautions": [
+        "마일리지 유효기간은 항공사 규정에 따름",
+        "환금성 상품·일부 전자기기는 적립·할인 제외"
+      ],
+      "doc": "준법감시인 심의필 제2025-5753호(2025.08.29) [유효기간 2028.08.28]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=302&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113020001"
+    },
+    {
+      "id": "CRD-07",
+      "category": "카드",
+      "name": "이사배 카드",
+      "type": "체크카드",
+      "one_liner": "H&B스토어·화장품·미용 할인에 특화된 체크카드",
+      "target": "개인",
+      "annual_fee": "BC 0원 / UnionPay 0원",
+      "requirement": "전월 국내외 가맹점 이용금액 30만원 이상(사용등록일~다음달까지는 통합할인한도 5천원 기본 제공)",
+      "benefits": [
+        "H&B스토어(올리브영·시코르) 1만원 이상 1,000원 / 2만원 이상 2,000원 할인(일 1회, 시코르 온라인몰 제외)",
+        "화장품 업종(이니스프리·아리따움·더페이스샵 등) 1만원 이상 1,000원 / 2만원 이상 2,000원 할인(일 1회)",
+        "미용실·네일샵·헬스클럽 등 1만원 이상 1,000원 / 2만원 이상 2,000원 할인(일 1회)",
+        "금융우대: 당행 전자금융 이체수수료 면제, 국내 전 은행 ATM 출금수수료 면제(월 10회), 환전 환율 70% 우대"
+      ],
+      "limits": "월간 통합할인한도: 전월 30만원↑ 5천원 / 60만원↑ 1만원(금융우대는 한도 외)",
+      "cautions": [
+        "I-ONE뱅크(앱)·IBK큐브(웹)에서만 발급",
+        "제세공과금·관리비·등록금·상품권·학부모 부담금은 실적 제외",
+        "백화점·면세점·아울렛 등 대형 가맹점은 할인 제외"
+      ],
+      "channels": "I-ONE뱅크(앱), IBK큐브(웹) — 비대면 발급 전용",
+      "doc": "준법감시인 심의필 제2026-3933호(2026.05.13) [유효기간 2029.05.05]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=325&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113250001"
+    },
+    {
+      "id": "CRD-08",
+      "category": "카드",
+      "name": "I-포켓몬(신용)",
+      "type": "신용카드(비대면 전용)",
+      "one_liner": "배달앱·편의점·택시·구독서비스 등 생활 할인 신용카드",
+      "target": "개인(본인)",
+      "annual_fee": "BC(국내전용) 15,000원 / VISA 18,000원 / Master 18,000원",
+      "requirement": "전월 국내외 가맹점 이용금액 30만원 이상(사용등록일~다음달 말까지는 통합한도 1만5천원 기본 제공)",
+      "benefits": [
+        "택시 5% 할인(월 최대 5천원)",
+        "편의점(CU·GS25·세븐일레븐·이마트24) 10% 할인(월 최대 5천원, 오프라인)",
+        "쿠팡·네이버 스마트스토어 5% 할인(월 최대 5천원)",
+        "패션(무신사·유니클로·29CM 등) 10% 할인(월 최대 1만원)",
+        "음식점·카페 5% 할인(월 최대 5천원, 오프라인)",
+        "배달앱(쿠팡이츠·배달의민족) 5% 할인(월 최대 1만원)",
+        "구독서비스(넷플릭스·유튜브프리미엄·디즈니플러스·티빙, PC 웹 정기결제) 30% 할인(월 최대 5천원)",
+        "올리브영·다이소 5% 할인(월 최대 5천원, 오프라인)"
+      ],
+      "limits": "통합 월 할인한도: 전월 30만원↑ 1만5천원 / 50만원↑ 2만5천원 / 100만원↑ 5만원",
+      "cautions": [
+        "비대면 전용 상품",
+        "음식점·카페·배달앱 할인을 받은 매출은 전월실적에서 제외",
+        "간편결제·키오스크 등 자체 가맹점번호로 승인되는 일부 결제와 앱 내 결제는 할인 제외"
+      ],
+      "channels": "비대면 전용",
+      "doc": "준법감시인 심의필 제2026-7989호(2026.10.12) [유효기간 2029.09.28]",
+      "source_url": "https://www.ibk.co.kr/cardbiz/detailBizNew.ibk?pageId=CA01010000&PDLN_CD=12&PDGR_CD=11&PDTM_CD=360&PDCD=0001&WHBN_VCD=***********&ALL_PDCD=12113600001"
+    },
+    {
+      "id": "INS-01",
+      "category": "보험(방카슈랑스)",
+      "name": "무배당 IBK e-하이브리드 연금저축보험_2601",
+      "type": "연금저축보험(적립식)",
+      "insurer": "IBK연금보험",
+      "one_liner": "세액공제 받는 연금저축보험, 가입 후 5년간 확정이율",
+      "highlights": [
+        "당해 납입 보험료 중 연금계좌 합산 600만원 한도로 납입금액의 16.5%(지방소득세 포함) 세액공제",
+        "가입 후 5년 이내 확정이율 3.5%, 5년 이후 공시이율",
+        "[상생금융 보너스특약] 5년 이상 납입하는 소상공인·중소기업 임직원·군인에게 60회차 이후 월계약일에 최대 60만원 추가 적립"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "보장·해지환급금·수수료 등 상세 내용은 홈페이지에 텍스트로 없고 상품안내장·약관(PDF)에 있음. 상세 질문은 안내장 확인으로 안내할 것",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=11&PDTM_CD=101&PDCD=0102&WHBN_VCD=***********&ALL_PDCD=11111010102"
+    },
+    {
+      "id": "INS-02",
+      "category": "보험(방카슈랑스)",
+      "name": "무배당 IBK e-5년든든연금보험(적립형)_2608",
+      "type": "연금보험(적립식)",
+      "insurer": "IBK연금보험",
+      "one_liner": "5년 확정금리 + 장기유지 보너스가 있는 적립형 연금보험",
+      "highlights": [
+        "5년간 확정금리, 5년 후 공시이율",
+        "장기유지 보너스(3년·5년·10년 시점)",
+        "유연한 자금 운용",
+        "조건 충족 시 비과세 혜택",
+        "현재 병력자도 무심사 가입"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "확정금리 수준·보너스 금액·비과세 조건 등 상세 내용은 상품안내장·약관(PDF)에 있음. 수치를 지어내지 말 것",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=11&PDTM_CD=102&PDCD=0210&WHBN_VCD=***********&ALL_PDCD=11111020210"
+    },
+    {
+      "id": "INS-03",
+      "category": "보험(방카슈랑스)",
+      "name": "삼성 에이스즉시연금보험(B2601)(무배당)_비대면",
+      "type": "즉시연금보험(거치식)",
+      "insurer": "삼성생명",
+      "one_liner": "한 번에 넣고 가입 1개월 후부터 연금 수령이 가능한 즉시연금",
+      "highlights": [
+        "일시납 후 가입 1개월 후부터 연금 수령 가능"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "연금 지급 방식·금액·해지 조건 등은 상품안내장·약관(PDF) 확인 필요",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=11&PDTM_CD=104&PDCD=0059&WHBN_VCD=***********&ALL_PDCD=11111040059"
+    },
+    {
+      "id": "INS-04",
+      "category": "보험(방카슈랑스)",
+      "name": "(무)건강검진 걱정없는 미니보험",
+      "type": "건강보험(간병/질병)",
+      "insurer": "라이나생명",
+      "one_liner": "한 번만 보험료를 내고 감액기간·면책기간 없이 바로 보장받는 미니보험",
+      "highlights": [
+        "단 한 번 보험료 납입",
+        "감액기간·면책기간 없이 바로 보장"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "보장 항목·보험료·보장기간은 상품안내장·약관(PDF) 확인 필요",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=14&PDTM_CD=119&PDCD=0335&WHBN_VCD=***********&ALL_PDCD=11141190335"
+    },
+    {
+      "id": "INS-05",
+      "category": "보험(방카슈랑스)",
+      "name": "NH해외여행보험",
+      "type": "여행자보험(상해)",
+      "insurer": "NH농협손해보험",
+      "one_liner": "해외여행 중 상해 등에 대비하는 여행자보험",
+      "highlights": [
+        "NH농협손해보험의 여행자보험(상해 분류)",
+        "i-ONE뱅크에서 개인·기업 가입"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "보장내용·보험료는 홈페이지에 텍스트로 없고 리플렛·상품약관(PDF)에 있음. 수치를 지어내지 말 것",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=51&PDTM_CD=131&PDCD=0004&WHBN_VCD=***********&ALL_PDCD=11511310004"
+    },
+    {
+      "id": "INS-06",
+      "category": "보험(방카슈랑스)",
+      "name": "삼성 플래티넘행복연금보험(B2601)(거치형, 무배당)_비대면",
+      "type": "연금보험(거치식)",
+      "insurer": "삼성생명",
+      "one_liner": "목돈을 한 번에 넣어 두고 연금으로 받는 거치형 연금보험",
+      "highlights": [
+        "5년 유지 시 최저계약적립액 보장(보증형에 한함)",
+        "장기유지보너스 지급",
+        "중도인출·추가납입으로 유연한 자금 활용",
+        "다양한 연금지급방법 선택 가능"
+      ],
+      "channels": "i-ONE뱅크",
+      "coverage_note": "적립액·연금액·해지환급금 등은 리플렛·상품약관(PDF)에 있음. 수치를 지어내지 말 것",
+      "source_url": "https://www.ibk.co.kr/insnbiz/detailBizNew.ibk?pageId=FM06010100&PDLN_CD=11&PDGR_CD=11&PDTM_CD=103&PDCD=0132&WHBN_VCD=***********&ALL_PDCD=11111030132"
+    }
+  ]
+}
+;
+
+/* ---------------------------------------------------------------
+   계산·판단 규칙. 숫자는 모두 products.json(공식 홈페이지 2026-11-06 확인)에서
+   옮긴 것이고, 여기서 새로 만든 금리·혜택은 없다. 단위: 금액 '만원', 기간 '개월'.
+---------------------------------------------------------------- */
+const R = {
+  'DEP-01': { kind:'save', monthly:[1,20], terms:{3:2.70, 6:2.90, 12:3.10}, termNames:{3:'1~6개월 미만', 6:'6~12개월 미만', 12:'12개월'}, max:4.6, prot:'yes', remoteOnly:true,
+    termS:'1~12개월', amtS:'월 1만~20만원', tags:['매달 모으기','이벤트 자금'],
+    fit:['결혼·이사·여행처럼 돈 쓸 날짜가 정해져 있고 1년 안에 모으려는 분','월 20만원 이내로 부담 없이 시작하려는 분','IBK와 처음 거래하는 분(최초 거래 우대 0.5%p)'],
+    persona:'29세 직장인. 내년 6월 결혼식 비용 일부를 월 15만원씩 모으고 싶어 함. IBK와는 처음 거래.' },
+  'DEP-02': { kind:'save', monthly:[1,200], terms:{12:2.75, 24:2.90, 36:2.90}, max:3.3, prot:'yes',
+    termS:'1·2·3년', amtS:'월 1만~200만원', tags:['매달 모으기','주거래'], mainBank:true,
+    fit:['급여이체·관리비 자동이체 등으로 IBK를 주거래로 쓰는 분(주거래 우대 0.3%p)','1~3년 꾸준히 모으려는 분','결혼·취업·출산 등으로 중간에 해지할 수도 있는 분(특별중도해지금리)'],
+    persona:'35세 중소기업 직원. IBK로 급여를 받고 있고 월 50만원씩 2년 모으려 함.' },
+  'DEP-03': { kind:'lump', lump:[100,10000], terms:{12:3.80, 24:3.80, 36:3.80}, base:{12:2.45, 24:2.30, 36:2.25}, max:4.0, prot:'no',
+    termS:'1·2·3년', amtS:'100만~1억원', tags:['목돈 예치','주거래'], mainBank:true, compound:true,
+    fit:['1억원 이내 목돈을 1~3년 굴리려는 IBK 주거래 고객','예금자보호보다 금리를 우선하는 분'],
+    persona:'48세 회사원. 만기된 적금 3,000만원을 1년 예치하려 함. IBK로 급여를 받음. 금리를 가장 중요하게 봄.' },
+  'DEP-04': { kind:'lump', lump:[100,null], terms:{6:3.49, 12:3.52, 24:3.30, 36:3.20}, max:3.52, prot:'yes', remoteOnly:true,
+    termS:'6개월~3년', amtS:'100만원 이상', tags:['목돈 예치','안전 우선'],
+    fit:['조건 신경 쓰지 않고 목돈을 맡기고 싶은 분','예금자보호가 꼭 필요한 분','i-ONE뱅크 앱 사용이 익숙한 분(비대면 전용)'],
+    persona:'62세 은퇴자. 퇴직금 일부 5,000만원을 안전하게 1년 맡기고 싶어 함. 예금자보호 여부를 꼭 물어봄. 앱은 서툶.' },
+  'DEP-05': { kind:'lump', lump:[100,null], terms:{12:3.79, 24:3.57, 36:3.47}, max:3.79, prot:'no', remoteOnly:true,
+    termS:'1~3년', amtS:'100만원 이상', tags:['목돈 예치','금리 우선'],
+    fit:['우대조건 없이 높은 기본금리를 원하는 분','예금자보호 대상이 아니어도 괜찮은 분','앱으로 가입할 수 있는 분(비대면 전용)'],
+    persona:'41세 IT 직장인. 2,000만원을 1년 넣어둘 곳을 찾음. 모든 걸 앱으로 처리하고 싶어 함.' },
+  'DEP-06': { kind:'save', monthly:[1,1000], terms:{12:2.25, 24:2.35, 36:2.40}, termNames:{12:'1~2년 미만', 24:'2~3년 미만', 36:'3년'}, max:2.4, prot:'no',
+    termS:'1~3년', amtS:'월 1만~1천만원', tags:['매달 모으기','큰 금액 적립'],
+    fit:['매달 넣는 금액을 자유롭게(월 최대 1천만원) 정하고 싶은 분','비과세종합저축으로 가입할 수 있는 분(세법 요건 충족 시)'],
+    persona:'67세 고객. 비과세종합저축 대상이며 매달 들어오는 임대수입 일부를 자유롭게 적립하려 함.' },
+  'DEP-07': { kind:'save', monthly:[2,50], terms:{12:2.80, 24:3.10}, termNames:{12:'1~2년 미만', 24:'2년 이상'}, max:3.1, prot:'gov',
+    termS:'당첨 시까지', amtS:'월 2만~50만원', tags:['내 집 마련','소득공제'],
+    fit:['청약으로 내 집 마련을 준비하는 분(전 금융기관 1인 1계좌)','총급여 7천만원 이하 무주택 세대주라 소득공제를 받을 수 있는 분'],
+    persona:'27세 사회초년생, 무주택 세대주. 총급여 3,800만원. 청약통장이 아직 없음.' },
+
+  'DEP-08': { kind:'save', monthly:[0,50], terms:{36:5.00}, max:8.0, prot:'yes', youth:true,
+    termS:'3년', amtS:'월 50만원 이내', tags:['매달 모으기','청년 자산형성'], termNames:{36:'3년'},
+    fit:['만 19~34세 청년으로 3년간 꾸준히 모을 수 있는 분','정부기여금(납입액의 6~12%)과 비과세 혜택을 받고 싶은 분','중소기업 재직자·신규취업자(우대형 기여금 12%)'],
+    persona:'27세 중소기업 신규취업자. 월 50만원을 3년간 모으고 싶음. 청년도약계좌는 없음.' },
+  'DEP-09': { kind:'save', monthly:[10,50], terms:{36:2.50, 60:2.50}, max:4.5, prot:'yes', sme:true,
+    termS:'3년·5년', amtS:'월 10만~50만원', tags:['매달 모으기','중소기업 재직'],
+    fit:['중소기업에 다니고 회사가 재직자우대저축공제에 함께 가입한 분','3~5년 장기 재직하며 목돈을 모으려는 분','IBK로 급여이체·카드를 쓰는 분(우대 최고 2.0%p)'],
+    persona:'32세 중소기업 생산직. 회사가 재직자우대저축공제에 가입해 월 25만원 적립을 안내받음.' },
+  'DEP-10': { kind:'save', monthly:[1,50], terms:{12:2.50}, max:6.5, prot:'yes',
+    termS:'1년', amtS:'월 1만~50만원', tags:['매달 모으기','자녀·육아'],
+    fit:['부모급여 또는 아동수당을 IBK 통장으로 받는 가정','1년 동안 월 50만원 이내로 모으려는 분','한부모 가정(우대 1.0%p 추가)'],
+    persona:'33세 육아휴직 중인 부모. 부모급여를 IBK 통장으로 받고 있음. 1년 동안 월 30만원씩 모으고 싶음.' },
+  'DEP-11': { kind:'save', monthly:[2,100], terms:{12:2.80, 24:3.10}, max:4.5, prot:'gov', youth:true,
+    termS:'해지 시까지', amtS:'월 2만~100만원', tags:['내 집 마련','소득공제'], termNames:{12:'1~2년 미만(기본)', 24:'2년 이상(기본)'},
+    fit:['만 19~34세 무주택 청년으로 연소득 5천만원 이하인 분','기존 주택청약종합저축을 전환해 금리를 높이려는 분','2년 이상 유지하며 청약을 준비하는 분(최대 연 4.5%)'],
+    persona:'29세 사회초년생. 연소득 3,800만원, 무주택. 주택청약종합저축을 3년째 갖고 있음.' },
+
+  'CRD-01': { kind:'card', credit:true, fee:10000, feeS:'1만~1만2천원', minSpend:50, spendS:'전월 50만원',
+    headline:'쿠팡·커피 20% 할인', tags:['카드 혜택','생활비 절약','온라인쇼핑'],
+    tiers:[[50,20000],[70,30000],[100,40000]],
+    fit:['쿠팡·편의점·커피·영화 이용이 많은 분','매달 50만원 이상 꾸준히 쓰는 분'],
+    persona:'31세 직장인. 월 카드 사용 70만원, 쿠팡·편의점·커피 지출이 많음.' },
+  'CRD-02': { kind:'card', credit:true, fee:10000, feeS:'1만~1만2천원', minSpend:0, spendS:'연 500만원부터(정액)',
+    headline:'연 최대 70만원 캐시백', tags:['카드 혜택','큰 금액 사용'],
+    yearTiers:[[500,50000],[1000,100000],[2000,200000],[3000,300000],[4000,500000],[5000,700000]],
+    fit:['1년에 1천만원 이상 쓰는 분(정액 캐시백 10만원부터)','복잡한 할인 조건보다 1년 뒤 한 번에 받는 캐시백이 좋은 분'],
+    persona:'45세 맞벌이 가장. 가족카드 포함 월 200만원 사용. 혜택 조건이 복잡한 건 싫어함.' },
+  'CRD-03': { kind:'card', credit:true, fee:10000, feeS:'1만~1만2천원', minSpend:50, spendS:'전월 50만원',
+    headline:'생활영역 1% + 1% 캐시백', tags:['카드 혜택','생활비 절약'],
+    fit:['음식점·마트·통신비·병원비 등 생활비 지출이 많은 분','할인 한도 걱정 없는 캐시백을 원하는 분'],
+    persona:'38세 주부. 월 120만원 사용, 마트·병원비·통신비 비중이 큼.' },
+  'CRD-04': { kind:'card', credit:false, fee:0, feeS:'없음', minSpend:30, spendS:'전월 30만원',
+    headline:'편의점·쿠팡·커피 할인', tags:['카드 혜택','사회초년생','생활비 절약'],
+    tiers:[[30,5000],[50,10000]],
+    fit:['연회비 부담 없이 생활 할인을 받고 싶은 분','신용카드 대신 체크카드로 소비를 관리하려는 분'],
+    persona:'24세 인턴. 월 40만원 체크카드 사용, 편의점·커피·영화를 자주 이용.' },
+  'CRD-05': { kind:'card', credit:false, fee:0, feeS:'없음', minSpend:0, spendS:'기본캐시백은 조건 없음',
+    headline:'전 가맹점 0.2%, 점심·저녁 0.6%', tags:['카드 혜택','단순 캐시백'],
+    fit:['실적 신경 쓰지 않고 쓰는 만큼 캐시백을 받고 싶은 분','점심·저녁 시간 결제가 많은 직장인'],
+    persona:'33세 직장인. 실적 맞추는 게 귀찮고 점심값을 주로 카드로 냄.' },
+  'CRD-06': { kind:'card', credit:false, fee:0, feeS:'없음', minSpend:30, spendS:'전월 30만원',
+    headline:'체크카드로 대한항공 마일리지', tags:['여행·마일리지','카드 혜택'],
+    fit:['체크카드로 대한항공 마일리지를 모으고 싶은 분','SSG닷컴·롯데ON 등 5개 온라인몰을 자주 쓰는 분'],
+    persona:'36세 직장인. 해외여행을 자주 가고 신용카드는 쓰지 않으려 함.' },
+
+  'CRD-07': { kind:'card', credit:false, fee:0, feeS:'없음', minSpend:30, spendS:'전월 30만원', remoteOnly:true,
+    headline:'올리브영·화장품·미용 할인', tags:['카드 혜택','뷰티·미용'], tiers:[[30,5000],[60,10000]],
+    fit:['올리브영·화장품·미용실 지출이 많은 분','연회비 없는 체크카드를 원하는 분','앱으로 발급할 수 있는 분(비대면 발급 전용)'],
+    persona:'26세 직장인. 월 40만원 체크카드 사용, 올리브영과 네일샵을 자주 이용.' },
+  'CRD-08': { kind:'card', credit:true, fee:15000, feeS:'1만5천~1만8천원', minSpend:30, spendS:'전월 30만원', remoteOnly:true,
+    headline:'배달앱·편의점·구독 할인', tags:['카드 혜택','생활비 절약','온라인쇼핑'], tiers:[[30,15000],[50,25000],[100,50000]],
+    fit:['배달앱·편의점·택시·구독서비스를 자주 쓰는 분','월 30만원 이상 쓰는 분(100만원 이상이면 월 할인한도 5만원)'],
+    persona:'25세 대학원생. 월 50만원 사용, 배달앱·편의점·넷플릭스 이용이 많음.' },
+
+  'INS-01': { kind:'ins', headline:'세액공제 16.5%', tags:['노후 준비','세액공제'], taxCredit:true,
+    fit:['연말정산 세액공제를 받으며 노후자금을 모으려는 분','소상공인·중소기업 임직원·군인(상생금융 보너스특약 대상, 5년 이상 납입 시)'],
+    persona:'34세 중소기업 직원. 연말정산 환급을 늘리고 싶고 노후 준비를 시작하려 함.' },
+  'INS-02': { kind:'ins', headline:'5년 확정금리 + 장기유지 보너스', tags:['노후 준비','비과세'],
+    fit:['5년 확정금리로 연금을 차곡차곡 모으려는 분','오래 유지할 계획인 분(3·5·10년 장기유지 보너스)','병력이 있어 가입이 걱정인 분(무심사 가입)'],
+    persona:'46세 직장인. 고혈압 약을 먹고 있음. 노후 연금을 따로 준비하고 싶음.' },
+  'INS-03': { kind:'ins', headline:'가입 1개월 후부터 연금 수령', tags:['노후 준비','목돈 예치'],
+    fit:['목돈을 한 번에 넣고 곧바로 연금처럼 나눠 받고 싶은 분'],
+    persona:'63세 은퇴자. 퇴직금 일부를 넣고 다음 달부터 생활비처럼 매달 받고 싶어 함.' },
+  'INS-04': { kind:'ins', headline:'보험료 한 번, 바로 보장', tags:['건강 대비'],
+    fit:['보험료를 한 번만 내는 간단한 보험을 원하는 분','감액·면책기간 없이 바로 보장받고 싶은 분'],
+    persona:'50세 자영업자. 보험은 복잡해서 싫고 간단한 건강 보장을 원함.' },
+  'INS-05': { kind:'ins', headline:'해외여행 중 상해 대비', tags:['여행·마일리지','건강 대비'],
+    fit:['해외여행·출장을 앞둔 분'],
+    persona:'36세 직장인. 다음 달 일본 여행을 앞두고 여행자보험을 알아보는 중.' },
+  'INS-06': { kind:'ins', headline:'5년 유지 시 최저계약적립액 보장(보증형)', tags:['노후 준비','목돈 예치'],
+    fit:['목돈을 넣어 두고 노후에 연금으로 받고 싶은 분','5년 이상 유지할 수 있는 분(장기유지보너스)'],
+    persona:'55세 회사원. 퇴직 전 목돈 5,000만원으로 노후 연금을 준비하고 싶음.' },
+};
+
+const NEEDS = ['목돈 예치','매달 모으기','내 집 마련','노후 준비','세액공제','카드 혜택','생활비 절약','이벤트 자금','여행·마일리지','건강 대비','청년 자산형성','중소기업 재직','자녀·육아','뷰티·미용'];
+// 창구에서 자주 만나는 고객 유형. 값은 연습용 가상 고객이며 실제 통계가 아니다.
+const PRESETS = [
+  { key:'student', icon:'edu', label:'대학생·인턴', desc:'소득 적음 · 첫 금융거래',
+    tips:['소득과 신용 이력이 짧아 신용카드보다 체크카드부터 권합니다.','소액 적금으로 저축 습관을 만드는 데 초점을 둡니다.','IBK와 첫 거래라면 최초 거래 우대 대상인지 확인합니다.'],
+    v:{ alias:'이학생', age:'20대', job:'대학생(인턴 중)', needs:['매달 모으기','카드 혜택','생활비 절약'], lump:100, monthly:20, term:12, spend:40,
+        protNeed:true, salaryIbk:false, newToIbk:true, hasIbkCard:false, preferCheck:true, channel:'both' } },
+  { key:'rookie', icon:'teller', label:'사회초년생', desc:'첫 월급 · 내 집 마련 시작',
+    tips:['청약통장이 있는지 먼저 묻습니다(전 금융기관 1인 1계좌).','무주택 세대주이고 총급여 7천만원 이하면 청약 소득공제를 안내합니다.','급여이체를 IBK로 하면 주거래 우대조건을 채울 수 있습니다.'],
+    v:{ alias:'박신입', age:'20대', job:'직장인(입사 1년차)', needs:['내 집 마련','매달 모으기','카드 혜택'], lump:300, monthly:50, term:12, spend:60,
+        protNeed:true, salaryIbk:true, newToIbk:false, hasIbkCard:false, preferCheck:false, channel:'both' } },
+  { key:'wedding', icon:'heart', label:'결혼 준비', desc:'쓸 날짜가 정해진 목돈',
+    tips:['결혼식·입주 날짜를 먼저 확인하고 만기를 그 날짜에 맞춥니다.','중간에 꺼내 쓸 가능성이 크면 중도해지 불이익을 꼭 설명합니다.','결혼 시 특별중도해지금리가 있는 상품(평생한가족통장)을 비교합니다.'],
+    v:{ alias:'최예비', age:'30대', job:'직장인', needs:['이벤트 자금','매달 모으기','목돈 예치'], lump:2000, monthly:100, term:12, spend:100,
+        protNeed:true, salaryIbk:false, newToIbk:false, hasIbkCard:false, preferCheck:false, channel:'both' } },
+  { key:'family', icon:'home', label:'맞벌이 가정', desc:'카드 사용 많음 · 세금 관심',
+    tips:['가족카드 합산 사용액이 크면 연간 정액 캐시백형 카드를 비교합니다.','급여이체·관리비 자동이체·카드 사용으로 주거래 우대를 함께 챙깁니다.','연말정산 세액공제 상품은 공제율·한도를 안내장으로 확인합니다.'],
+    v:{ alias:'정가족', age:'40대', job:'맞벌이 직장인', needs:['목돈 예치','카드 혜택','세액공제','자녀·육아'], lump:3000, monthly:100, term:24, spend:200,
+        protNeed:true, salaryIbk:true, newToIbk:false, hasIbkCard:true, preferCheck:false, channel:'both' } },
+  { key:'owner', icon:'store', label:'자영업자', desc:'매출 변동 · 노후 준비',
+    tips:['매출 변동이 커서 중도해지 가능성을 먼저 확인합니다.','일부 상품(D-day적금, 더굴리기통장)은 개인사업자 가입이 제외되니 개인 명의 가입인지 확인합니다.','소상공인은 연금저축보험 상생금융 보너스특약 대상인지 안내장으로 확인합니다.'],
+    v:{ alias:'한사장', age:'50대', job:'자영업(음식점)', needs:['노후 준비','세액공제','목돈 예치'], lump:1000, monthly:50, term:12, spend:150,
+        protNeed:true, salaryIbk:false, newToIbk:false, hasIbkCard:false, preferCheck:false, channel:'both' } },
+  { key:'retiree', icon:'armchair', label:'은퇴 고객', desc:'퇴직금 · 안전 우선 · 앱 서툶',
+    tips:['천천히 설명하고, 이해했는지 고객 말로 다시 확인합니다(고령 고객 보호).','예금자보호 여부와 1인당 1억원 한도를 먼저 안내합니다.','비대면 전용 상품은 앱 가입을 옆에서 돕거나 영업점 상품을 비교합니다. 필요하면 가족 동석을 안내합니다.'],
+    v:{ alias:'윤어르신', age:'60대 이상', job:'은퇴(퇴직금 수령)', needs:['목돈 예치','노후 준비'], lump:5000, monthly:30, term:12, spend:50,
+        protNeed:true, salaryIbk:false, newToIbk:false, hasIbkCard:false, preferCheck:true, channel:'branch' } },
+  { key:'traveler', icon:'plane', label:'여행 좋아하는 직장인', desc:'마일리지 · 해외 결제',
+    tips:['신용카드를 원치 않으면 마일리지 적립 체크카드를 비교합니다.','마일리지 유효기간은 항공사 규정을 따른다는 점을 안내합니다.','환전이 잦으면 IBK 결제계좌 환전 우대(카드별 조건) 여부를 확인합니다.'],
+    v:{ alias:'서여행', age:'30대', job:'직장인', needs:['여행·마일리지','카드 혜택'], lump:500, monthly:30, term:12, spend:80,
+        protNeed:false, salaryIbk:false, newToIbk:false, hasIbkCard:false, preferCheck:true, channel:'both' } },
+];
+const PRINCIPLES = [
+  ['적합성 원칙','고객의 재산·소득·목적을 먼저 확인하고 맞지 않는 상품은 권하지 않았다'],
+  ['적정성 원칙','고객이 원하는 상품이 고객 상황에 맞지 않으면 그 사실을 알렸다'],
+  ['설명의무','금리·혜택·수수료·중도해지 불이익·예금자보호 여부를 설명했다'],
+  ['불공정영업 금지','다른 상품 가입이나 카드 발급을 조건으로 걸지 않았다(꺾기 금지)'],
+  ['부당권유 금지','확실하지 않은 내용을 단정하거나 불리한 점을 숨기지 않았다'],
+  ['광고 규제','상품설명서·공식 안내와 다른 과장된 표현을 쓰지 않았다'],
+];
+const TAX = 0.154;
+const P = CATALOG.products;
+const byId = Object.fromEntries(P.map(p => [p.id, p]));
+const CATS = ['전체', '예적금', '카드', '보험(방카슈랑스)'];
+// 선 아이콘(공식 문서 톤). 색은 글자색(currentColor)을 따른다.
+const ICONS = {
+  edu:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  guide:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  teller:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  printer:'<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+  files:'<path d="M15 2H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><path d="M15 2v5h5"/><path d="M4 7v13a2 2 0 0 0 2 2h10"/>',
+  coins:'<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/>',
+  card:'<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  store:'<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v1a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v8h14v-8"/><path d="M10 21v-5h4v5"/>',
+  umbrella:'<path d="M23 12a11.05 11.05 0 0 0-22 0zm-5 7a3 3 0 0 1-6 0v-7"/>',
+  armchair:'<path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/>',
+  plane:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+  ok:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  warn:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  bad:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  phone:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  award:'<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+  bulb:'<path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  arrow:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  back:'<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+  swap:'<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+};
+const icon = (name, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+// IBK기업은행 공식 홈페이지 로고에서 흰 배경을 지운 이미지(빌드 때 assets/logo.b64에서 채움). 상표는 IBK기업은행 소유.
+const LOGO = 'data:image/png;base64,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';
+const KIND_ICON = { '직원 교육용':'edu', '고객 안내용':'guide', '창구 영업용':'teller' };
+const ICON = { '예적금':icon('coins','cat'), '카드':icon('card','cat'), '보험(방카슈랑스)':icon('shield','cat') };
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+const manwon = n => (n >= 10000 ? (n / 10000).toLocaleString('ko-KR') + '억' : n.toLocaleString('ko-KR') + '만') + '원';
+const pct = n => n.toFixed(2) + '%';
+const ul = items => '<ul class="clean">' + items.filter(Boolean).map(i => `<li>${esc(i)}</li>`).join('') + '</ul>';
+
+let cur = 'DEP-01', tab = 'edu', filter = '전체';
+const profile = {
+  alias:'김고객', age:'30대', job:'중소기업 직장인', needs:['목돈 예치'], lump:1000, monthly:50, term:12, spend:70,
+  protNeed:true, salaryIbk:false, newToIbk:false, hasIbkCard:false, preferCheck:false, channel:'both', memo:'', preset:'',
+};
+const checked = {};
+let switched = null;  // [이 상품으로 전환]으로 바꾼 경우 이전 상품을 기억해 비교·되돌리기에 쓴다  // 판매원칙 점검표 체크 상태(상품별)
+
+/* ---------- 공통 조각 ---------- */
+function protBadge(p) {
+  const r = R[p.id];
+  if (r.kind === 'card') return '';
+  if (r.kind === 'ins') return '<span class="badge b-warn">보험상품 · 예금 아님</span>';
+  if (r.prot === 'yes') return `<span class="badge b-ok">${icon('check')}예금자보호 대상</span>`;
+  if (r.prot === 'gov') return '<span class="badge b-warn">예금자보호 아님 · 정부(주택도시기금) 별도 관리</span>';
+  return `<span class="badge b-bad">${icon('x')}예금자보호 대상 아님(채권)</span>`;
+}
+function headBlock(kindLabel, audience, p) {
+  const now = new Date();
+  const d = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  return `<div class="rhead"><img class="blogo" src="${LOGO}" alt="IBK기업은행"><span class="kind">${icon(KIND_ICON[kindLabel])}${esc(kindLabel)}</span>
+    <h2>${ICON[p.category]} ${esc(p.name)}</h2>
+    <div class="meta">${esc(p.type)} · 대상: ${esc(audience)} · 작성일 ${d} · 상품정보 기준일 ${esc(CATALOG.checked_at)} (IBK기업은행 공식 홈페이지) · 상품코드 ${esc(p.id)}</div></div>`;
+}
+function sourceBlock(p) {
+  return `<div class="src">근거 자료: ${esc(p.doc || '상품안내장·약관(PDF) 참조')} · <a href="${esc(p.source_url)}" target="_blank" rel="noopener">공식 상품 페이지</a><br>
+  금리는 모두 세전 연%이며, 금리·혜택은 바뀔 수 있습니다. 실제 안내·가입 전 상품설명서와 약관을 다시 확인하세요.
+  <div class="disclaimer">이 문서는 공식 홈페이지 공개 정보를 바탕으로 자동 작성한 교육·연습용 자료이며 IBK기업은행의 공식 자료나 금융 자문이 아닙니다.</div></div>`;
+}
+function rateRows(p) {
+  const r = R[p.id];
+  return Object.keys(r.terms).map(Number).sort((a,b) => a-b).map(t => ({ t, rate:r.terms[t], base:r.base ? r.base[t] : null }));
+}
+function termLabel(t) { return t % 12 === 0 ? `${t/12}년` : `${t}개월`; }
+
+/* ---------- SVG 차트 ---------- */
+function barChart(rows, opts = {}) {
+  // rows: [{label, value, color, note}]
+  const W = 640, rowH = 34, left = opts.left || 190, top = 8;
+  const H = top + rows.length * rowH + 22;
+  const max = opts.max || Math.max(...rows.map(r => r.value)) * 1.15 || 1;
+  const sx = v => (W - left - 70) * v / max;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title || '')}">`;
+  for (let g = 0; g <= 4; g++) {
+    const x = left + (W - left - 70) * g / 4;
+    s += `<line x1="${x}" y1="${top}" x2="${x}" y2="${H-20}" stroke="#e5e7eb"/>
+          <text x="${x}" y="${H-5}" font-size="11" fill="#98a2b3" text-anchor="middle">${opts.fmt ? opts.fmt(max*g/4) : (max*g/4).toFixed(1)}</text>`;
+  }
+  rows.forEach((r, i) => {
+    const y = top + i * rowH;
+    s += `<text x="${left-8}" y="${y+21}" font-size="12.5" text-anchor="end" fill="#1d2433" ${r.bold ? 'font-weight="bold"' : ''}>${esc(r.label)}</text>
+          <rect x="${left}" y="${y+6}" width="${Math.max(2, sx(r.value))}" height="${rowH-14}" rx="4" fill="${r.color}"/>
+          <text x="${left + sx(r.value) + 6}" y="${y+21}" font-size="12.5" font-weight="bold" fill="#1d2433">${esc(r.text ?? r.value)}</text>`;
+  });
+  return s + '</svg>';
+}
+// 기간별 금리 막대 + 최고금리 기준선(세로 막대형). groups: [{label, bars:[{value,text,color}]}]
+function columnChart(groups, maxLine, opts = {}) {
+  const W = 760, H = 340, l = 56, r = 20, t = 34, b = 290;
+  const max = opts.max;
+  const Y = v => b - (b - t) * v / max;
+  const gw = (W - l - r) / groups.length;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title || '')}">`;
+  for (let v = 0; v <= max + 1e-9; v += opts.step) {
+    s += `<line x1="${l}" y1="${Y(v)}" x2="${W-r}" y2="${Y(v)}" stroke="${v === 0 ? '#5f6b7a' : '#e3e7ed'}"/>
+      <text x="${l-8}" y="${Y(v)+4}" font-size="13" text-anchor="end" fill="#5f6b7a">${v.toFixed(1)}%</text>`;
+  }
+  groups.forEach((g, i) => {
+    const n = g.bars.length, bw = Math.min(64, gw * 0.62 / n), x0 = l + gw * i + (gw - bw * n - 6 * (n - 1)) / 2;
+    g.bars.forEach((bar, j) => {
+      const x = x0 + j * (bw + 6);
+      s += `<rect x="${x}" y="${Y(bar.value)}" width="${bw}" height="${b - Y(bar.value)}" fill="${bar.color}"/>
+        <text x="${x + bw/2}" y="${Y(bar.value) - 7}" font-size="15" font-weight="bold" text-anchor="middle" fill="#222833">${esc(bar.text)}</text>`;
+    });
+    s += `<text x="${l + gw * i + gw/2}" y="${b + 24}" font-size="15" text-anchor="middle" fill="#222833" font-weight="bold">${esc(g.label)}</text>`;
+  });
+  if (maxLine) {
+    s += `<line x1="${l}" y1="${Y(maxLine.value)}" x2="${W-r}" y2="${Y(maxLine.value)}" stroke="#a3271d" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="${W-r}" y="${Y(maxLine.value) - 8}" font-size="14" font-weight="bold" text-anchor="end" fill="#a3271d">${esc(maxLine.text)}</text>`;
+  }
+  return s + '</svg>';
+}
+function stepChart(steps, value, unitFmt, valueLabel) {
+  // steps: [[threshold, reward]] — 사용액 구간별 혜택 계단 그래프
+  const W = 640, H = 170, l = 60, b = 130, t = 18;
+  const maxX = steps[steps.length-1][0] * 1.35, maxY = steps[steps.length-1][1] * 1.15;
+  const X = v => l + (W - l - 20) * Math.min(v, maxX) / maxX, Y = v => b - (b - t) * v / maxY;
+  let path = `M${X(0)},${Y(0)}`, prevY = Y(0);
+  steps.forEach(([th, rw]) => { path += ` L${X(th)},${prevY} L${X(th)},${Y(rw)}`; prevY = Y(rw); });
+  path += ` L${X(maxX)},${Y(steps[steps.length-1][1])}`;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="사용액별 혜택">
+    <line x1="${l}" y1="${b}" x2="${W-10}" y2="${b}" stroke="#98a2b3"/><line x1="${l}" y1="${t}" x2="${l}" y2="${b}" stroke="#98a2b3"/>
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="3"/>`;
+  steps.forEach(([th, rw]) => {
+    s += `<circle cx="${X(th)}" cy="${Y(rw)}" r="4" fill="var(--accent)"/>
+      <text x="${X(th)}" y="${Y(rw)-8}" font-size="11.5" text-anchor="middle" font-weight="bold">${esc(unitFmt(rw))}</text>
+      <text x="${X(th)}" y="${b+16}" font-size="11" text-anchor="middle" fill="#667085">${esc(manwon(th))}</text>`;
+  });
+  if (value != null) {
+    s += `<line x1="${X(value)}" y1="${t}" x2="${X(value)}" y2="${b}" stroke="#b54708" stroke-dasharray="4 3" stroke-width="2"/>
+      <text x="${Math.min(X(value), W-90)}" y="${t+2}" font-size="12" fill="#b54708" font-weight="bold">▼ ${esc(valueLabel)}</text>`;
+  }
+  return s + `<text x="${l}" y="${H-6}" font-size="11" fill="#667085">가로: 사용액 · 세로: 받을 수 있는 혜택</text></svg>`;
+}
+
+/* ---------- 계산기 ---------- */
+function depositCalc(p, amt, term, useMax) {
+  const r = R[p.id];
+  const rate = useMax ? r.max : r.terms[term];
+  let principal, interest;
+  if (r.kind === 'save') {
+    principal = amt * 10000 * term;
+    interest = amt * 10000 * (rate/100) / 12 * term * (term + 1) / 2;   // 매월 같은 날 납입, 단리
+  } else {
+    principal = amt * 10000;
+    interest = principal * (rate/100) * term / 12;                       // 단리
+  }
+  return { rate, principal, interest, after: interest * (1 - TAX) };
+}
+function cardBenefit(p, spend, extra = {}) {
+  // spend: 월 사용액(만원). 반환: { monthly, yearly, text, note, ok }
+  const r = R[p.id], s = spend * 10000;
+  switch (p.id) {
+    case 'CRD-01': case 'CRD-04': case 'CRD-07': case 'CRD-08': {
+      const tier = [...r.tiers].reverse().find(([th]) => spend >= th);
+      const cap = tier ? tier[1] : 0;
+      return { monthly:cap, text: cap ? `월 최대 ${won(cap)} 할인 한도` : '전월 실적 미달 — 할인 없음',
+        note:'할인 한도(최대치)입니다. 실제 할인은 카드별 할인 대상 가맹점에서 쓴 만큼만 생깁니다.', ok: !!cap };
+    }
+    case 'CRD-02': {
+      const yr = spend * 12;
+      const tier = [...r.yearTiers].reverse().find(([th]) => yr >= th);
+      const cb = tier ? tier[1] : Math.floor(yr * 10000 * 0.001 / 1000) * 1000 >= 1000 ? yr * 10000 * 0.001 : 0;
+      return { yearly:cb, text:`연간 ${manwon(yr)} 사용 → 캐시백 ${won(cb)}`, note: tier ? '발급일 기준 12개월 이용금액 기준, 13개월 후 지정계좌 입금' : '연 500만원 미만이면 이용금액의 0.1%(1천원 미만 미지급)', ok: !!tier };
+    }
+    case 'CRD-03': {
+      if (spend < r.minSpend) return { monthly:0, text:'전월 실적 50만원 미달 — 캐시백 없음', note:'', ok:false };
+      const share = (extra.topShare ?? 50) / 100;
+      const base = s * 0.01, add = Math.min(s * share * 0.01, 100000);
+      return { monthly: base + add, text:`기본 ${won(base)} + 추가 ${won(add)} = 월 ${won(base+add)}`,
+        note:`사용액 전부가 6대 생활영역이고, 가장 많이 쓴 영역 비중이 ${Math.round(share*100)}%라고 가정했습니다(공식 예시: 월 100만원 → 1만5천원).`, ok:true };
+    }
+    case 'CRD-05': {
+      const tShare = (extra.timeShare ?? 30) / 100;
+      const base = s * (1 - tShare) * 0.002;
+      const time = spend >= 30 ? s * tShare * 0.006 : s * tShare * 0.002;
+      return { monthly: base + time, text:`월 약 ${won(base + time)} 캐시백`,
+        note:`점심·저녁 시간 사용 비중 ${Math.round(tShare*100)}% 가정. 타임캐시백 0.6%는 전월 30만원 이상일 때만 적용(미달 시 0.2%).`, ok:true };
+    }
+    case 'CRD-06': {
+      if (spend < r.minSpend) return { monthly:0, text:'전월 실적 30만원 미달 — 적립 없음', note:'', ok:false };
+      const miles = Math.floor(Math.min(s, 1000000) / 3000);
+      return { monthly: null, miles, text:`일반 적립 월 약 ${miles.toLocaleString()}마일`,
+        note:'국내 가맹점 결제가 모두 건당 3만원 이상이라고 가정(일반 적립 월 100만원까지 인정). 5개 온라인몰 SUPER 적립은 별도.', ok:true };
+    }
+  }
+}
+
+/* ---------- 직원 교육용 ---------- */
+function renderEdu(p) {
+  const r = R[p.id];
+  let h = headBlock('직원 교육용', '신입·인턴 행원, 상품 교육 담당자', p);
+  h += `<p class="lead"><b>한 줄 요약</b> — ${esc(p.one_liner)} ${protBadge(p)}</p>`;
+
+  h += '<h3>1. 상품 구조 한눈에</h3><div class="tbl-wrap"><table>';
+  const rows = r.kind === 'card'
+    ? [['상품 유형',p.type],['대상',p.target],['연회비',p.annual_fee],['전월 실적 조건',p.requirement],['할인·적립 한도',p.limits || '별도 통합한도 없음']]
+    : r.kind === 'ins'
+    ? [['상품 유형',p.type],['보험회사',p.insurer],['판매 채널',p.channels],['상세 보장',p.coverage_note]]
+    : [['상품 유형',p.type],['가입 대상',p.target],['가입 기간',p.term],['가입 금액',p.amount],['가입 채널',p.channels],['예금자보호',p.protection]];
+  h += rows.map(([k,v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('') + '</table></div>';
+
+  if (r.kind === 'save' || r.kind === 'lump') {
+    h += '<h3>2. 금리 구조 (세전, 연%)</h3>';
+    const groups = rateRows(p).map(x => ({ label: r.termNames?.[x.t] || termLabel(x.t), bars: [
+      ...(x.base != null ? [{ value:x.base, text:pct(x.base), color:"#cfd6e2" }] : []),
+      { value:x.rate, text:pct(x.rate), color:"var(--accent)" } ] }));
+    const hasBonus = r.max > Math.max(...Object.values(r.terms));
+    h += columnChart(groups, hasBonus ? { value:r.max, text:`최고 ${pct(r.max)} (우대조건 모두 충족 시)` } : null,
+      { max: Math.ceil(r.max + 0.6), step: 1, title:'기간별 금리' });
+    h += `<div class="legend">${r.base ? '<span><i style="background:#cfd6e2"></i>기본금리</span>' : ''}<span><i style="background:var(--accent)"></i>${r.base ? '적용금리' : '기간별 기본금리'}</span>${hasBonus ? '<span><i style="background:#a3271d;height:3px;vertical-align:3px"></i>최고금리</span>' : '<span>우대금리 없음 — 표시 금리가 그대로 적용</span>'}</div>`;
+    h += '<div class="grid2"><div><h4>우대금리 조건</h4>' + ul(p.preferential) + '</div>';
+    h += '<div><h4>특징</h4>' + ul(p.features) + '</div></div>';
+  } else if (r.kind === 'card') {
+    h += '<h3>2. 혜택 구조</h3>' + ul(p.benefits);
+    if (r.tiers) h += '<h4>전월 사용액별 월 할인 한도</h4>' + stepChart(r.tiers, null, won);
+    if (r.yearTiers) h += '<h4>연간 사용액별 정액 캐시백</h4>' + stepChart(r.yearTiers, null, won);
+  } else {
+    h += '<h3>2. 핵심 특징</h3>' + ul(p.highlights);
+    h += `<div class="box warn">${icon('warn','bi')}보장 내용·보험료·해지환급금 같은 <b>수치는 홈페이지에 텍스트로 공개되어 있지 않고 상품안내장·약관(PDF)에만 있습니다.</b> 교육 중에도 숫자를 추측해서 말하지 말고 안내장을 같이 보며 설명하도록 지도하세요.</div>`;
+  }
+
+  h += '<h3>3. 같은 종류 상품과 비교</h3>' + compareBlock(p);
+
+  h += '<h3>4. 판매 포인트 & 꼭 설명할 것</h3><div class="grid2"><div class="box ok"><b>' + icon('ok','bi') + '이런 고객에게 권하세요</b>' + ul(r.fit) + '</div>';
+  h += '<div class="box bad"><b>' + icon('warn','bi') + '반드시 설명할 것(설명의무)</b>' + ul(mustExplain(p)) + '</div></div>';
+
+  h += '<h3>5. 확인 퀴즈</h3><p class="small muted">질문을 눌러 답을 확인하세요. PDF로 저장하면 답이 함께 인쇄됩니다.</p>';
+  h += quiz(p).map(([q,a]) => `<details class="flash"><summary>${esc(q)}</summary><div>${esc(a)}</div></details>`).join('');
+
+  h += `<h3>6. 롤플레이 연습</h3><div class="box info"><b>${icon('chat','bi')}고객 설정</b><p style="margin:4px 0">${esc(r.persona)}</p>
+    <b>연습 순서</b><ol style="margin:4px 0;padding-left:20px"><li>고객 상황을 묻는 질문 3개 이상으로 니즈 파악</li><li>이 상품이 맞는 이유를 고객 상황과 연결해 설명</li><li>위 '반드시 설명할 것'을 빠짐없이 안내</li><li>함께 쓰면 좋은 상품 1개 제안(강요 금지)</li></ol>
+    <b>평가 기준</b> 니즈 파악 · 상품 적합성 · 설명의무 이행 · 교차판매 · 응대 태도 (각 5점)</div>`;
+  return h + sourceBlock(p);
+}
+function compareBlock(p) {
+  const r = R[p.id];
+  const same = P.filter(x => x.category === p.category);
+  if (r.kind === 'save' || r.kind === 'lump') {
+    const rows = same.map(x => ({ label:x.name.replace('IBK',''), value:R[x.id].max, text:`${pct(R[x.id].max)} ${R[x.id].prot==='yes'?'· 보호':R[x.id].prot==='gov'?'· 정부관리':'· 비보호'}`,
+      color: x.id === p.id ? 'var(--accent)' : R[x.id].prot === 'yes' ? '#9fd3b2' : '#f1b8b1', bold: x.id === p.id }));
+    return barChart(rows, { max:5, left:230, fmt:v => v.toFixed(1)+'%', title:'예적금 최고금리 비교' }) +
+      '<div class="legend"><span><i style="background:var(--accent)"></i>이 상품</span><span><i style="background:#9fd3b2"></i>예금자보호 대상</span><span><i style="background:#f1b8b1"></i>보호 대상 아님(채권·청약)</span></div>' +
+      '<p class="small muted">최고금리는 우대조건을 모두 채웠을 때 기준이라 상품끼리 단순 비교는 조심하세요. 중금채는 금리가 높은 대신 예금자보호가 안 됩니다.</p>';
+  }
+  const head = r.kind === 'card' ? ['상품','종류','연회비','실적 조건','대표 혜택'] : ['상품','종류','보험회사','대표 특징'];
+  const body = same.map(x => {
+    const rx = R[x.id];
+    const cells = r.kind === 'card' ? [x.name, rx.credit ? '신용' : '체크', rx.feeS, rx.spendS, rx.headline] : [x.name, x.type, x.insurer, rx.headline];
+    return `<tr class="${x.id === p.id ? 'me' : ''}">${cells.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`;
+  }).join('');
+  return `<div class="tbl-wrap"><table><tr>${head.map(c => `<th>${c}</th>`).join('')}</tr>${body}</table></div>`;
+}
+function mustExplain(p) {
+  const r = R[p.id];
+  if (r.kind === 'card') {
+    const a = [`연회비: ${p.annual_fee}`, `혜택 조건: ${p.requirement}`, ...p.cautions];
+    if (r.credit) a.push('신용카드는 결제일에 갚지 못하면 연체이자가 붙고 신용점수가 떨어질 수 있습니다.');
+    return a;
+  }
+  if (r.kind === 'ins') {
+    const a = ['보험은 예금이 아닙니다. 중도에 해지하면 해지환급금이 낸 보험료보다 적을 수 있습니다.',
+      `은행은 판매만 대행하고, 보험금 지급 책임은 보험회사(${p.insurer})에 있습니다.`,
+      '보장 내용·보험료·해지환급금·예금자보호 여부는 상품안내장과 약관으로 확인해 안내합니다.',
+      `가입 채널: ${p.channels}(비대면 상품)`];
+    if (r.taxCredit) a.push('연금 외 방식으로 받거나 중도해지하면 공제받은 세금이 기타소득세로 다시 부과될 수 있습니다. 공제율은 소득 수준에 따라 다를 수 있으니 안내장으로 확인합니다.');
+    return a;
+  }
+  const a = [p.protection, ...p.cautions, '표시 금리는 세전이며 이자에서 이자소득세 15.4%가 원천징수됩니다.'];
+  if (r.remoteOnly) a.push(`비대면 전용 상품입니다(${p.channels}). 창구에서는 앱 가입을 도와드려야 합니다.`);
+  return a;
+}
+function quiz(p) {
+  const r = R[p.id];
+  const q = [];
+  if (r.kind === 'save' || r.kind === 'lump') {
+    q.push(['이 상품은 예금자보호 대상인가요?', p.protection]);
+    q.push(['최고금리는 얼마이고, 받으려면 어떤 조건이 필요한가요?', `최고 연 ${pct(r.max)}(세전). ${p.preferential.join(' / ')}`]);
+    q.push(['고객이 만기 전에 해지하면 어떻게 되나요?', p.cautions.find(c => c.includes('중도')) || p.cautions[0]]);
+    q.push(['가입 금액과 기간 조건은?', `${p.amount} / ${p.term}`]);
+    q.push(['어디서 가입할 수 있나요?', p.channels]);
+  } else if (r.kind === 'card') {
+    q.push(['연회비는 얼마인가요?', p.annual_fee]);
+    q.push(['혜택을 받으려면 전월 실적이 얼마나 필요한가요?', p.requirement]);
+    q.push(['대표 혜택 두 가지는?', p.benefits.slice(0,2).join(' / ')]);
+    q.push(['혜택에서 빠지는 경우는?', p.cautions.join(' / ')]);
+    if (p.limits) q.push(['할인 한도는?', p.limits]);
+  } else {
+    q.push(['이 보험은 어느 보험회사 상품인가요?', `${p.insurer}. 은행은 판매를 대행합니다.`]);
+    q.push(['핵심 특징은?', p.highlights.join(' / ')]);
+    q.push(['고객이 보장 금액을 물으면 어떻게 답하나요?', '홈페이지에 수치가 공개되어 있지 않으므로 추측하지 말고 상품안내장·약관(PDF)을 함께 보며 안내합니다.']);
+    q.push(['예금과 가장 크게 다른 점은?', '보험은 예금이 아니며 중도해지 시 해지환급금이 낸 보험료보다 적을 수 있습니다.']);
+  }
+  return q;
+}
+
+/* ---------- 고객 안내용 ---------- */
+function renderGuide(p) {
+  const r = R[p.id];
+  let h = headBlock('고객 안내용', '상품을 알아보는 고객', p);
+  h += `<p class="lead" style="font-size:18px">${esc(p.one_liner)}</p>`;
+
+  h += '<div class="tiles">';
+  const tiles = r.kind === 'card'
+    ? [['대표 혜택', r.headline, ''], ['연회비', r.feeS, r.credit ? '신용카드' : '체크카드'], ['혜택 조건', r.spendS, '']]
+    : r.kind === 'ins'
+    ? [['핵심 특징', r.headline, ''], ['보험회사', p.insurer, '은행은 판매 대행'], ['가입 방법', p.channels, '비대면']]
+    : [['최고 금리(세전)', '연 ' + pct(r.max), r.max > Math.max(...Object.values(r.terms)) ? '우대조건 모두 충족 시' : '우대조건 없이 바로 적용'], ['가입 기간', r.termS, ''], ['가입 금액', r.amtS, ''],
+       ['예금자보호', r.prot === 'yes' ? '보호됨' : r.prot === 'gov' ? '정부 별도 관리' : '보호 안 됨', r.prot === 'yes' ? '1인당 1억원까지' : '']];
+  h += tiles.map(([l,v,s]) => `<div class="tile"><div class="l">${esc(l)}</div><div class="v">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join('') + '</div>';
+
+  h += '<h3>이런 분께 잘 맞아요</h3>' + '<ul class="checks">' + r.fit.map(f => `<li><span class="ic ic-ok">${icon('check')}</span><span>${esc(f)}</span></li>`).join('') + '</ul>';
+
+  if (r.kind === 'save' || r.kind === 'lump') {
+    h += '<h3>내 이자 계산해 보기</h3>' + guideDepositCalc(p);
+    h += '<h3>금리 더 받는 방법</h3>' + ul(p.preferential);
+  } else if (r.kind === 'card') {
+    h += '<h3>내 혜택 계산해 보기</h3>' + guideCardCalc(p);
+    h += '<h3>주요 혜택</h3>' + ul(p.benefits);
+  } else {
+    if (r.taxCredit) h += '<h3>연말정산 세액공제 계산해 보기</h3>' + guideTaxCalc();
+    h += '<h3>주요 특징</h3>' + ul(p.highlights);
+    h += `<div class="box info">ℹ️ 보장 내용, 보험료, 해지환급금 같은 자세한 숫자는 <b>상품안내장과 약관</b>에 나와 있어요. 가입 전에 꼭 함께 확인하세요.</div>`;
+  }
+
+  h += '<h3>가입 전에 꼭 알아두세요</h3><div class="box warn">' + ul(mustExplain(p)) + '</div>';
+  h += `<h3>가입 방법</h3><p>${icon('phone','bi')}${esc(p.channels || '발급 채널은 공식 상품 페이지에서 확인하세요.')}</p>`;
+  h += '<p class="small muted">일반금융소비자는 금융소비자보호법에 따라 상품에 대해 충분한 설명을 받을 권리가 있고, 설명을 듣고 이해했다는 확인을 강요받지 않습니다.</p>';
+  return h + sourceBlock(p);
+}
+function guideDepositCalc(p) {
+  const r = R[p.id];
+  const terms = Object.keys(r.terms).map(Number);
+  const isSave = r.kind === 'save';
+  const def = isSave ? Math.min(Math.max(20, r.monthly[0]), r.monthly[1]) : Math.max(1000, r.lump[0]);
+  return `<div class="calc" data-calc="dep">
+    <label>${isSave ? '매달 넣을 금액(만원)' : '맡길 금액(만원)'}<input type="number" min="0" step="1" data-f="amt" value="${def}"></label>
+    <label>기간<select data-f="term">${terms.map(t => `<option value="${t}" ${t===12?'selected':''}>${termLabel(t)}</option>`).join('')}</select></label>
+    <label>적용 금리<select data-f="max"><option value="0">${r.base ? '적용금리' : '기본금리'}(조건 없이)</option>${r.max > Math.max(...Object.values(r.terms)) ? `<option value="1">최고금리(우대 모두 충족)</option>` : ''}</select></label>
+    <div class="res" data-out></div></div>`;
+}
+function guideCardCalc(p) {
+  const extra = p.id === 'CRD-03' ? '<label>가장 많이 쓴 영역 비중(%)<input type="number" min="0" max="100" data-f="top" value="50"></label>'
+    : p.id === 'CRD-05' ? '<label>점심·저녁 시간 사용 비중(%)<input type="number" min="0" max="100" data-f="time" value="30"></label>' : '';
+  return `<div class="calc" data-calc="card"><label>한 달 카드 사용액(만원)<input type="number" min="0" data-f="spend" value="70"></label>${extra}<div class="res" data-out></div></div>`;
+}
+function guideTaxCalc() {
+  return `<div class="calc" data-calc="tax"><label>1년에 낼 보험료(만원)<input type="number" min="0" data-f="pay" value="300"></label><div class="res" data-out></div></div>`;
+}
+function runCalcs(root) {
+  const p = byId[cur];
+  root.querySelectorAll('.calc').forEach(box => {
+    const f = n => box.querySelector(`[data-f="${n}"]`);
+    const out = box.querySelector('[data-out]');
+    const kind = box.dataset.calc;
+    if (kind === 'dep') {
+      const r = R[p.id];
+      let amt = Number(f('amt').value) || 0;
+      const term = Number(f('term').value), useMax = f('max').value === '1';
+      const lim = r.kind === 'save' ? r.monthly : r.lump;
+      let warn = '';
+      if (amt < lim[0]) warn = `최소 ${manwon(lim[0])} 이상이어야 해요.`;
+      if (lim[1] && amt > lim[1]) warn = `최대 ${manwon(lim[1])}까지 가능해요${r.kind === 'save' ? '(월 기준)' : ''}.`;
+      const c = depositCalc(p, amt, term, useMax);
+      out.innerHTML = `${warn ? `<div class="box bad">${esc(warn)}</div>` : ''}
+        만기에 원금 <b>${won(c.principal)}</b> + 세후 이자 <span class="big">${won(c.after)}</span>
+        <div class="small muted">세전 이자 ${won(c.interest)} − 이자소득세 15.4% · 연 ${pct(c.rate)} 단리로 단순 계산${r.kind==='save'?'(매달 같은 날 납입 가정)':''}${r.compound?' · 이 상품은 복리채라 실제 이자는 조금 더 많을 수 있어요':''}.
+        실제 이자는 납입일·우대조건 충족 여부에 따라 달라집니다.</div>
+        ${barChart([{label:'원금', value:c.principal, text:won(c.principal), color:'#c7d2e3'},{label:'세후 이자', value:c.after, text:won(c.after), color:'var(--accent)'}], {left:90, fmt:v => manwon(Math.round(v/10000))})}`;
+    } else if (kind === 'card') {
+      const spend = Number(f('spend').value) || 0;
+      const b = cardBenefit(p, spend, { topShare: f('top') ? Number(f('top').value) : undefined, timeShare: f('time') ? Number(f('time').value) : undefined });
+      const r = R[p.id];
+      let net = '';
+      if (b.monthly != null || b.yearly != null) {
+        const yr = b.yearly ?? b.monthly * 12;
+        net = `<div>1년이면 약 <span class="big">${won(yr)}</span>${r.fee ? ` · 연회비(${won(r.fee)}~) 빼면 약 ${won(yr - r.fee)}` : ''}</div>`;
+      }
+      out.innerHTML = `<div class="${b.ok ? '' : 'box warn'}"><b>${esc(b.text)}</b></div>${net}<div class="small muted">${esc(b.note)}</div>` +
+        (r.tiers ? stepChart(r.tiers, spend, won, `내 사용액 ${manwon(spend)}`) : r.yearTiers ? stepChart(r.yearTiers, spend*12, won, `연 ${manwon(spend*12)}`) : '');
+    } else if (kind === 'tax') {
+      const pay = Number(f('pay').value) || 0;
+      const base = Math.min(pay, 600);
+      out.innerHTML = `세액공제 대상 ${manwon(base)} × 16.5% = 최대 <span class="big">${won(base * 10000 * 0.165)}</span>
+        <div class="small muted">연금계좌 합산 연 600만원 한도, 지방소득세 포함 16.5%(공식 페이지 기준). 공제율은 소득 수준에 따라 낮아질 수 있으니 상품안내장·세법 기준을 확인하세요.</div>`;
+    }
+  });
+}
+
+/* ---------- 창구 영업용 ---------- */
+function fitChecks(p, pf) {
+  const r = R[p.id], out = [];
+  const hit = r.tags.filter(t => pf.needs.includes(t));
+  out.push(hit.length ? ['ok', `고객 니즈와 일치: ${hit.join(', ')}`] : ['warn', `고객이 말한 니즈(${pf.needs.join(', ') || '미입력'})와 직접 맞지 않습니다. 니즈를 다시 확인하세요.`]);
+  if (r.kind === 'save') {
+    const m = pf.monthly;
+    if (m < r.monthly[0]) out.push(['bad', `월 ${manwon(m)}은 최소 납입액(${manwon(r.monthly[0])})보다 적습니다.`]);
+    else if (m > r.monthly[1]) out.push(['warn', `월 ${manwon(m)}은 한도(월 ${manwon(r.monthly[1])})를 넘습니다. 한도까지만 이 상품에, 나머지는 다른 상품을 안내하세요.`]);
+    else out.push(['ok', `월 ${manwon(m)} 납입 가능(한도 월 ${manwon(r.monthly[1])})`]);
+  }
+  if (r.kind === 'lump') {
+    const l = pf.lump;
+    if (l < r.lump[0]) out.push(['bad', `목돈 ${manwon(l)}은 최소 가입금액(${manwon(r.lump[0])})보다 적습니다.`]);
+    else if (r.lump[1] && l > r.lump[1]) out.push(['warn', `목돈 ${manwon(l)}은 1인 한도(${manwon(r.lump[1])})를 넘습니다.`]);
+    else out.push(['ok', `목돈 ${manwon(l)} 가입 가능`]);
+  }
+  if (r.kind === 'save' || r.kind === 'lump') {
+    const terms = Object.keys(r.terms).map(Number);
+    if (!terms.includes(pf.term)) {
+      const near = terms.reduce((a,b) => Math.abs(b - pf.term) < Math.abs(a - pf.term) ? b : a);
+      out.push(['warn', `희망 기간 ${termLabel(pf.term)}에 해당하는 금리 정보가 없어 ${termLabel(near)} 기준으로 안내합니다. 가입 가능 기간: ${p.term}`]);
+    } else out.push(['ok', `희망 기간 ${termLabel(pf.term)}: 연 ${pct(r.terms[pf.term])}(${r.base ? '적용' : '기본'}금리)`]);
+    if (pf.protNeed && r.prot === 'gov') out.push(['info', '예금자보호법 보호 대상은 아니지만 주택도시기금 재원으로 정부가 별도 관리합니다. 예금자보호를 중요하게 보는 고객이니 이 차이를 꼭 설명하세요.']);
+    else if (pf.protNeed && r.prot !== 'yes') out.push(['bad', `고객이 예금자보호를 중요하게 봅니다. 이 상품은 ${r.prot === 'gov' ? '예금자보호 대상이 아닙니다(정부 별도 관리)' : '예금자보호 대상이 아닙니다(채권)'}. 보호 상품(예: 더굴리기 정기예금)과 비교해 안내하세요.`]);
+    else if (r.prot === 'yes') out.push(['ok', '예금자보호 대상(1인당 1억원, 다른 보호상품과 합산)']);
+    if (r.mainBank) out.push(pf.salaryIbk ? ['ok', 'IBK 급여이체 중 → 주거래 우대조건 ①(급여이체) 충족, 조건 1개 더 채우면 주거래 우대'] : ['warn', '주거래 우대는 7개 조건 중 2개 이상 필요. 급여이체·관리비 자동이체·IBK카드 사용 여부를 물어보세요.']);
+    if (p.id === 'DEP-01') out.push(pf.newToIbk ? ['ok', 'IBK 첫 거래 → 최초 거래 우대 0.5%p 대상 가능성'] : ['info', '최초 거래 우대(0.5%p)는 실명등록 3개월 이내 또는 최근 6개월 수신 평잔 0원인 고객만 해당']);
+  }
+  if (r.kind === 'card') {
+    if (p.id === 'CRD-02') out.push(pf.spend * 12 >= 1000 ? ['ok', `연 ${manwon(pf.spend*12)} 사용 예상 → 정액 캐시백 구간`] : ['warn', `연 ${manwon(pf.spend*12)} 사용 예상 → 캐시백이 작습니다(연 500만원 미만이면 0.1%). 다른 카드가 유리할 수 있어요.`]);
+    else if (r.minSpend) out.push(pf.spend >= r.minSpend ? ['ok', `월 ${manwon(pf.spend)} 사용 → 전월 실적 ${manwon(r.minSpend)} 충족`] : ['bad', `월 ${manwon(pf.spend)} 사용 → 전월 실적 ${manwon(r.minSpend)} 미달, 혜택을 거의 못 받습니다.`]);
+    else out.push(['ok', '기본 캐시백은 실적 조건이 없습니다.']);
+    if (r.credit) out.push(['info', '신용카드: 발급 심사가 있고, 사용 습관(연체 가능성)을 확인하세요. 체크카드가 더 맞는 고객인지도 확인합니다.']);
+    out.push(['info', '결제계좌를 IBK 입출식 계좌로 하면 이체·ATM 수수료 면제 등 금융우대(카드별 조건 상이)']);
+  }
+  if (r.kind === 'ins') {
+    if (pf.needs.includes('목돈 예치') && !pf.needs.includes('노후 준비')) out.push(['bad', '고객이 예금처럼 목돈 보관을 원합니다. 보험은 예금이 아니고 중도해지 시 손실이 날 수 있음을 먼저 설명하세요(적합성 원칙).']);
+    if (['60대 이상'].includes(pf.age)) out.push(['warn', '고령 고객: 상품 이해도를 꼼꼼히 확인하고, 필요하면 가족 동석 등을 안내하세요.']);
+    out.push(['info', `비대면(${p.channels}) 상품입니다. 창구에서는 앱 가입을 도와드리고 상품안내장을 함께 확인하세요.`]);
+  }
+  if (r.youth) out.push(['20대','30대'].includes(pf.age) ? ['warn', '청년 전용 상품입니다. 만 19~34세(병역기간 차감)인지와 소득 요건을 먼저 확인하세요.'] : ['bad', `청년 전용 상품(만 19~34세)이라  고객은 가입하기 어렵습니다.`]);
+  if (r.sme) out.push(/중소|중기/.test(pf.job) ? ['warn', '중소벤처기업진흥공단이 가입을 승인해야 합니다. 회사가 재직자우대저축공제에 가입했는지 확인하세요.'] : ['bad', '중소기업 재직자 전용 상품입니다. 직업(재직 회사 규모)을 확인하세요.']);
+  if (r.remoteOnly && pf.channel === 'branch') out.push(['warn', `고객은 영업점 가입을 원하지만 이 상품은 비대면 전용(${p.channels})입니다. 앱 설치·가입을 옆에서 도와드리거나 영업점 상품을 비교 안내하세요.`]);
+  return out;
+}
+function crossSell(p, pf) {
+  const scored = P.filter(x => x.id !== p.id).map(x => {
+    const rx = R[x.id];
+    let score = 0; const why = [];
+    const hit = rx.tags.filter(t => pf.needs.includes(t));
+    if (hit.length) { score += 3 * hit.length; why.push(`니즈 일치(${hit.join(', ')})`); }
+    if (rx.kind === 'card' && R[p.id].kind !== 'card' && !pf.hasIbkCard) {
+      if (R[p.id].mainBank) { score += 2; why.push('IBK카드 월 30만원·3개월 사용이 이 상품의 주거래 우대조건 ④'); }
+      if (rx.minSpend && pf.spend < rx.minSpend && rx.id !== 'CRD-02') { score -= 4; }
+      else if (rx.id === 'CRD-02' && pf.spend * 12 < 1000) { score -= 4; }
+      else if (pf.spend > 0) { score += 1; why.push(`월 ${manwon(pf.spend)} 사용 기준 혜택 조건 충족`); }
+    }
+    if (rx.mainBank && R[p.id].kind === 'card') { score += 2; why.push('IBK카드 사용이 주거래 우대조건이 되어 금리를 더 받을 수 있음'); }
+    if ((rx.kind === 'lump') && pf.lump < rx.lump[0]) score -= 5;
+    if (pf.protNeed && (rx.kind === 'lump' || rx.kind === 'save') && rx.prot !== 'yes') { score -= 2; }
+    if (rx.remoteOnly && pf.channel === 'branch') score -= 1;
+    if (rx.kind === 'ins' && pf.needs.includes('노후 준비') && ['40대','50대','60대 이상'].includes(pf.age)) { score += 1; why.push('노후 준비 연령대'); }
+    if (x.id === 'DEP-07' && ['20대','30대'].includes(pf.age) && pf.needs.includes('내 집 마련')) { score += 1; }
+    return { x, score, why };
+  }).filter(o => o.score > 0 && o.why.length).sort((a,b) => b.score - a.score);
+  return scored.slice(0, 3);
+}
+function scriptBlock(p, pf) {
+  const r = R[p.id], alias = pf.alias || '고객';
+  const needs = pf.needs.join(', ') || '자금 계획';
+  const steps = [];
+  steps.push(['① 인사·니즈 확인', [`안녕하세요, ${alias} 고객님. 오늘 ${needs} 관련해서 알아보러 오셨다고 들었어요. 몇 가지 여쭤봐도 될까요?`],
+    r.kind === 'card' ? ['한 달에 카드를 얼마 정도 쓰세요?', '주로 어디에서 많이 쓰세요? (온라인쇼핑·마트·커피·교통 등)', '연회비 있는 신용카드와 연회비 없는 체크카드 중 어떤 쪽이 편하세요?']
+    : r.kind === 'ins' ? ['노후 준비는 지금 어떻게 하고 계세요?', '중간에 돈이 필요해질 가능성은 어느 정도인가요?', '연말정산 세액공제를 받고 계신가요?']
+    : ['이 돈은 언제 쓰실 계획이세요?', '중간에 꺼내 쓸 가능성이 있으세요?', '예금자보호 여부가 중요하신가요?']]);
+  const main = r.kind === 'card' ? `${r.headline}이 핵심이에요.`
+    : r.kind === 'ins' ? `${r.headline}이 핵심이에요.`
+    : `${pf.term && r.terms[pf.term] ? termLabel(pf.term) + ' 기준 연 ' + pct(r.terms[pf.term]) : '기본금리'}${r.max > Math.max(...Object.values(r.terms)) ? `이고, 조건을 채우시면 최고 연 ${pct(r.max)}까지 받으실 수 있어요(세전).` : '예요(세전). 따로 우대조건을 채우지 않아도 이 금리가 그대로 적용돼요.'}`;
+  steps.push(['② 상품 제안', [`말씀 들어보니 「${p.name}」이 잘 맞을 것 같아요. ${p.one_liner}입니다.`, main], []]);
+  const explain = mustExplain(p).slice(0, 4);
+  steps.push(['③ 꼭 설명할 내용(설명의무)', explain.map(e => `그리고 꼭 알고 계셔야 할 점이 있어요. ${e}`), []]);
+  const obj = r.kind === 'card'
+    ? [['"연회비가 아까워요."', r.fee ? `고객님 사용액이면 혜택이 연회비보다 큰지 같이 계산해 볼게요. (아래 예상 혜택 참고) 부담되시면 연회비 없는 체크카드도 있어요.` : '이 카드는 연회비가 없어요.']]
+    : r.kind === 'ins'
+    ? [['"예금이랑 뭐가 달라요?"', '보험은 예금이 아니라서 중간에 해지하면 낸 돈보다 적게 돌려받을 수 있어요. 대신 연금·보장 같은 기능이 있어요. 오래 유지하실 수 있는지가 중요합니다.']]
+    : [['"다른 데가 금리 더 높던데요?"', r.prot === 'no' ? '금리만 보시면 그럴 수 있어요. 다만 이 상품은 채권이라 예금자보호가 안 돼요. 보호가 중요하시면 정기예금도 함께 비교해 드릴게요.' : `우대조건을 채우시면 최고 연 ${pct(r.max)}까지 가능해요. 조건을 채울 수 있는지 같이 확인해 볼까요?`],
+       ['"중간에 깨면요?"', p.cautions.find(c => c.includes('중도')) || p.cautions[0]]];
+  steps.push(['④ 예상 질문 대응', [], obj]);
+  steps.push(['⑤ 마무리', [`설명드린 내용 중 궁금하신 점 있으세요? 상품설명서도 함께 드릴게요. ${p.channels ? `가입은 ${p.channels}에서 하실 수 있어요.` : `신청 방법은 공식 상품 페이지에서 함께 확인해 드릴게요.`}${r.remoteOnly || r.kind === 'ins' ? ' 앱 가입은 제가 옆에서 도와드릴게요.' : ''}`], []]);
+  return steps.map(([t, says, qs]) => `<div class="script"><div class="step">${esc(t)}</div>
+    ${says.map(s => `<p class="say">${esc(s)}</p>`).join('')}
+    ${qs.length && typeof qs[0] === 'string' ? ul(qs) : ''}
+    ${qs.length && Array.isArray(qs[0]) ? qs.map(([q,a]) => `<p><b>${esc(q)}</b><br><span class="say" style="display:block">${esc(a)}</span></p>`).join('') : ''}</div>`).join('');
+}
+function profileForm(pf) {
+  const opt = (arr, v) => arr.map(a => `<option ${a===v?'selected':''}>${a}</option>`).join('');
+  const ranked = rankAll(pf);
+  return `<div class="form no-print" id="pform"><h3>${icon('guide','bi')}고객 유형 고르기 <span class="small muted">(누르면 프로필이 채워지고, 아래에서 고쳐 쓸 수 있어요)</span></h3>
+    <div class="presets">${PRESETS.map(s => `<button class="preset ${pf.preset===s.key?'on':''}" data-preset="${s.key}"><b>${icon(s.icon,'bi')}${s.label}</b><span>${s.desc}</span></button>`).join('')}</div>
+    <h3>${icon('user','bi')}고객 프로필 <span class="small muted">(가명만 사용하세요 · 입력하면 보고서가 바로 바뀝니다)</span></h3>
+    <div class="row">
+      <label>가명<input data-p="alias" value="${esc(pf.alias)}"></label>
+      <label>연령대<select data-p="age">${opt(['20대','30대','40대','50대','60대 이상'], pf.age)}</select></label>
+      <label>직업<input data-p="job" value="${esc(pf.job)}"></label>
+      <label>목돈(만원)<input type="number" min="0" data-p="lump" value="${pf.lump}"></label>
+      <label>월 저축 가능액(만원)<input type="number" min="0" data-p="monthly" value="${pf.monthly}"></label>
+      <label>희망 기간<select data-p="term">${[3,6,12,24,36].map(t => `<option value="${t}" ${t===pf.term?'selected':''}>${termLabel(t)}</option>`).join('')}</select></label>
+      <label>월 카드 사용액(만원)<input type="number" min="0" data-p="spend" value="${pf.spend}"></label>
+      <label>가입 채널<select data-p="channel"><option value="both" ${pf.channel==='both'?'selected':''}>영업점·앱 모두 가능</option><option value="branch" ${pf.channel==='branch'?'selected':''}>영업점만(앱 어려움)</option></select></label>
+    </div>
+    <div class="needs">${NEEDS.map(n => `<label><input type="checkbox" data-need="${n}" ${pf.needs.includes(n)?'checked':''}>${n}</label>`).join('')}</div>
+    <div class="flags">
+      <label><input type="checkbox" data-p="protNeed" ${pf.protNeed?'checked':''}>예금자보호 중요</label>
+      <label><input type="checkbox" data-p="salaryIbk" ${pf.salaryIbk?'checked':''}>IBK 급여이체 중</label>
+      <label><input type="checkbox" data-p="newToIbk" ${pf.newToIbk?'checked':''}>IBK 첫 거래</label>
+      <label><input type="checkbox" data-p="hasIbkCard" ${pf.hasIbkCard?'checked':''}>IBK카드 보유</label>
+      <label><input type="checkbox" data-p="preferCheck" ${pf.preferCheck?'checked':''}>신용카드 부담(체크카드 선호)</label>
+    </div>
+    <h3 style="margin-top:12px">${icon('award','bi')}이 고객에게 맞는 상품 순위 <span class="small muted">([이 상품으로 전환]을 누르면 고객 정보는 그대로 두고 보고서 3종을 그 상품 기준으로 다시 만듭니다)</span></h3>
+    ${ranked.length ? `<ol class="rank">${ranked.map((o, i) => `<li class="${o.x.id===cur?'me':''}"><span class="no">${i+1}</span><b>${ICON[o.x.category]} ${esc(o.x.name)}</b><span class="why">${esc(o.why.join(' · '))}</span>${o.x.id===cur ? '<span class="badge b-ok">지금 보는 상품</span>' : `<button class="btn ghost" data-go="${o.x.id}" title="고객 정보는 그대로 두고 보고서 3종을 이 상품 기준으로 바꿉니다">이 상품으로 전환${icon('arrow')}</button>`}</li>`).join('')}</ol>` : '<p class="muted">니즈를 1개 이상 고르면 순위가 나옵니다.</p>'}
+  </div>`;
+}
+// 전체 상품을 고객 프로필 기준으로 점수 매긴다(니즈 일치 + 가입조건·성향 감점).
+function rankAll(pf) {
+  return P.map(x => {
+    const r = R[x.id]; let score = 0; const why = [];
+    const hit = r.tags.filter(t => pf.needs.includes(t));
+    if (!hit.length) return null;
+    score += 3 * hit.length; why.push(`니즈 일치: ${hit.join(', ')}`);
+    if (r.kind === 'save') {
+      if (pf.monthly < r.monthly[0]) { score -= 5; why.push('월 납입액 부족'); }
+      else if (pf.monthly > r.monthly[1]) { score -= 1; why.push(`월 한도 ${manwon(r.monthly[1])}`); }
+    }
+    if (r.kind === 'lump') {
+      if (pf.lump < r.lump[0]) { score -= 5; why.push(`최소 ${manwon(r.lump[0])}`); }
+      else why.push(`목돈 ${manwon(pf.lump)} 가입 가능`);
+    }
+    if (r.kind === 'save' || r.kind === 'lump') {
+      if (pf.protNeed) {
+        if (r.prot === 'yes') { score += 1; why.push('예금자보호'); }
+        else if (r.prot === 'gov') why.push('정부(주택도시기금) 별도 관리');
+        else { score -= 2; why.push('예금자보호 아님'); }
+      }
+      if (r.mainBank && pf.salaryIbk) { score += 1; why.push('주거래 우대 가능'); }
+      if (x.id === 'DEP-01' && pf.newToIbk) { score += 1; why.push('최초 거래 우대'); }
+      if (x.id === "DEP-07" && pf.needs.includes("내 집 마련")) { score += 3; why.push("청약 자격 준비(1인 1계좌, 미보유 시 우선)"); }
+      score += r.max / 10;   // 같은 점수면 최고금리가 높은 쪽
+    }
+    if (r.kind === 'card') {
+      if (x.id === 'CRD-02') { if (pf.spend * 12 >= 1000) { score += 1; why.push(`연 ${manwon(pf.spend*12)} → 정액 캐시백`); } else { score -= 4; why.push('연간 사용액 부족'); } }
+      else if (r.minSpend) { if (pf.spend >= r.minSpend) why.push(`전월 ${manwon(r.minSpend)} 실적 충족`); else { score -= 4; why.push('전월 실적 미달'); } }
+      if (r.credit && pf.preferCheck) { score -= 3; why.push('신용카드 부담 고객'); }
+      if (!r.credit && pf.preferCheck) { score += 1; why.push('연회비 없는 체크카드'); }
+    }
+    if (r.kind === 'ins' && !pf.needs.some(n => ['노후 준비','세액공제','건강 대비','여행·마일리지'].includes(n))) { score -= 3; why.push('보험은 예금이 아님'); }
+    else if (r.kind === 'ins' && pf.protNeed) { score -= 2; why.push('예금과 달리 중도해지 시 손실 가능'); }
+    if (r.remoteOnly && pf.channel === 'branch') { score -= 2; why.push('비대면 전용(앱 도움 필요)'); }
+    if (r.youth) { if (['20대','30대'].includes(pf.age)) { score += 1; why.push('청년 전용(나이 확인)'); } else { score -= 10; } }
+    if (r.sme) { if (/중소|중기/.test(pf.job)) { score += 2; why.push('중소기업 재직자 전용'); } else { score -= 10; } }
+    if (x.id === 'DEP-10' && !pf.needs.includes('자녀·육아')) score -= 3;
+    if (x.id === 'DEP-11' && pf.needs.includes('내 집 마련') && ['20대','30대'].includes(pf.age)) { score += 3; why.push('무주택 청년이면 최대 연 4.5%'); }
+    return { x, score, why };
+  }).filter(o => o && o.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
+}
+// [이 상품으로 전환] 직후 보여 주는 비교 안내. 고객 프로필은 그대로이고 상품만 바뀐다.
+function keyFact(p) {
+  const r = R[p.id];
+  if (r.kind === 'card') return `연회비 ${r.feeS} · ${r.spendS}`;
+  if (r.kind === 'ins') return `${p.insurer} · ${r.headline}`;
+  return `최고 연 ${pct(r.max)} · ${r.prot === 'yes' ? '예금자보호' : r.prot === 'gov' ? '정부 별도 관리' : '예금자보호 아님'}`;
+}
+function verdictOf(p, pf) {
+  const c = fitChecks(p, pf);
+  return c.some(x => x[0] === 'bad') ? ['bad', '부적합 가능성'] : c.some(x => x[0] === 'warn') ? ['warn', '조건부 적합'] : ['ok', '적합'];
+}
+function switchNotice(p, pf) {
+  if (!switched || switched.from === p.id) return '';
+  const a = byId[switched.from], va = verdictOf(a, pf), vb = verdictOf(p, pf);
+  return `<div class="switch no-print"><div class="sw-head">${icon('swap')}<b>상품을 전환했습니다.</b> 입력한 고객 정보(${esc(pf.alias)} · ${esc(pf.age)})는 그대로이고, 보고서 3종이 새 상품 기준으로 다시 만들어졌습니다.</div>
+    <div class="tbl-wrap"><table><tr><th></th><th>이전 상품</th><th>지금 상품</th></tr>
+      <tr><th>상품</th><td>${esc(a.name)}</td><td><b>${esc(p.name)}</b></td></tr>
+      <tr><th>핵심 조건</th><td>${esc(keyFact(a))}</td><td>${esc(keyFact(p))}</td></tr>
+      <tr><th>이 고객 적합성</th><td><span class="ic ic-${va[0]}">${icon(va[0])}</span> ${va[1]}</td><td><span class="ic ic-${vb[0]}">${icon(vb[0])}</span> ${vb[1]}</td></tr></table></div>
+    <button class="btn ghost" data-back="1">${icon('back')}이전 상품(${esc(a.name)})으로 돌아가기</button></div>`;
+}
+function renderTeller(p) {
+  const r = R[p.id], pf = profile;
+  let h = switchNotice(p, pf) + profileForm(pf);
+  h += headBlock('창구 영업용', '창구 직원(상담 준비·기록)', p);
+  h += `<div class="tbl-wrap"><table><tr><th>고객</th><td>${esc(pf.alias)} · ${esc(pf.age)} · ${esc(pf.job)}</td><th>니즈</th><td>${esc(pf.needs.join(', ') || '미입력')}</td></tr>
+    <tr><th>자금</th><td>목돈 ${manwon(pf.lump)} · 월 ${manwon(pf.monthly)} · 희망 ${termLabel(pf.term)}</td><th>거래·성향</th><td>${[pf.salaryIbk && 'IBK 급여이체', pf.newToIbk && 'IBK 첫 거래', pf.hasIbkCard && 'IBK카드 보유', pf.protNeed && '예금자보호 중요', pf.channel==='branch' && '영업점 선호', `카드 월 ${manwon(pf.spend)}`].filter(Boolean).join(' · ')}</td></tr></table></div>`;
+
+  const ps = PRESETS.find(s => s.key === pf.preset);
+  if (ps) h += `<div class="box info"><b>${icon(ps.icon,'bi')}${ps.label} 고객 응대 포인트</b>${ul(ps.tips)}</div>`;
+
+  const checks = fitChecks(p, pf);
+  const bad = checks.filter(c => c[0] === 'bad').length, warn = checks.filter(c => c[0] === 'warn').length;
+  const verdict = bad ? ['bad', icon('bad') + '이 고객에게는 맞지 않을 가능성이 큽니다 — 대안 상품을 먼저 검토하세요'] : warn ? ['warn', icon('warn') + '조건부 적합 — 아래 주의 항목을 확인하고 설명하세요'] : ['ok', icon('ok') + '이 고객에게 적합합니다'];
+  h += `<h3>1. 적합성 판단</h3><div class="box ${verdict[0]}"><b>${verdict[1]}</b></div>`;
+  const ic = { ok:icon('ok'), warn:icon('warn'), bad:icon('bad'), info:icon('info') };
+  h += '<ul class="checks">' + checks.map(([k, t]) => `<li><span class="ic ic-${k}">${ic[k]}</span><span>${esc(t)}</span></li>`).join('') + '</ul>';
+
+  h += '<h3>2. 이 고객 기준 예상 효과</h3>';
+  if (r.kind === 'save' || r.kind === 'lump') {
+    const terms = Object.keys(r.terms).map(Number);
+    const term = terms.includes(pf.term) ? pf.term : terms.reduce((a,b) => Math.abs(b - pf.term) < Math.abs(a - pf.term) ? b : a);
+    let amt = r.kind === 'save' ? Math.min(pf.monthly, r.monthly[1]) : (r.lump[1] ? Math.min(pf.lump, r.lump[1]) : pf.lump);
+    const a = depositCalc(p, amt, term, false), b = depositCalc(p, amt, term, true);
+    h += `<div class="tbl-wrap"><table><tr><th>가정</th><th>금리</th><th>세전 이자</th><th>세후 이자</th></tr>
+      <tr><td>${r.kind==='save' ? '월 '+manwon(amt) : manwon(amt)} · ${termLabel(term)} · ${r.base?'적용':'기본'}금리</td><td>${pct(a.rate)}</td><td>${won(a.interest)}</td><td><b>${won(a.after)}</b></td></tr>
+      ${r.max > a.rate ? `<tr><td>우대조건 모두 충족(최고금리)</td><td>${pct(b.rate)}</td><td>${won(b.interest)}</td><td><b>${won(b.after)}</b></td></tr>` : ''}</table></div>
+      <p class="small muted">단리 단순 계산${r.kind==='save'?'(매달 같은 날 납입 가정)':''}. 고객에게 확정 금액처럼 말하지 말고 '예상'임을 함께 안내하세요.</p>`;
+  } else if (r.kind === 'card') {
+    const b = cardBenefit(p, pf.spend, {});
+    h += `<div class="box ${b.ok?'ok':'warn'}"><b>${esc(b.text)}</b>${b.monthly != null || b.yearly != null ? ` · 연 약 ${won(b.yearly ?? b.monthly*12)}${r.fee ? `(연회비 ${won(r.fee)}~ 별도)` : ''}` : ''}<div class="small muted">${esc(b.note)}</div></div>`;
+  } else if (r.taxCredit) {
+    h += `<div class="box info">연 보험료 600만원까지 납입액의 16.5% 세액공제(최대 연 99만원, 공식 페이지 기준). 공제율은 소득에 따라 달라질 수 있습니다.</div>`;
+  } else {
+    h += '<div class="box info">예상 연금액·보장 금액은 홈페이지에 공개되지 않았습니다. 상품안내장·가입설계서로 확인해 안내하세요.</div>';
+  }
+
+  h += '<h3>3. 상담 화법</h3>' + scriptBlock(p, pf);
+
+  const cs = crossSell(p, pf);
+  h += '<h3>4. 함께 제안할 상품(교차판매)</h3>';
+  h += cs.length ? '<div class="recs">' + cs.map(({x, why}) => `<div class="rec"><b>${ICON[x.category]} ${esc(x.name)}</b><span class="small muted">${esc(x.one_liner)}</span><div class="why">${icon('bulb','bi')}${esc(why.join(' · '))}</div><button class="btn ghost no-print" data-go="${x.id}" title="고객 정보는 그대로 두고 보고서 3종을 이 상품 기준으로 바꿉니다">이 상품으로 전환${icon('arrow')}</button></div>`).join('') + '</div>'
+    : '<p class="muted">입력한 프로필에 맞는 추가 상품이 없습니다. 니즈를 더 확인해 보세요.</p>';
+  h += '<p class="small muted">교차판매는 고객에게 실제로 도움이 될 때만 제안하고, 다른 상품 가입을 조건으로 걸면 안 됩니다(불공정영업 금지).</p>';
+
+  const ck = checked[p.id] || {};
+  h += '<h3>5. 금융소비자보호법 6대 판매원칙 점검표</h3><div class="principles">' +
+    PRINCIPLES.map(([t, d], i) => `<label><input type="checkbox" data-ck="${i}" ${ck[i]?'checked':''}><span><b>${t}</b> — ${d}</span></label>`).join('') + '</div>';
+  h += `<h3>6. 상담 메모</h3><textarea class="memo no-print" placeholder="상담 결과, 고객 반응, 후속 조치(예: 3일 후 재연락)를 적으세요">${esc(pf.memo)}</textarea><div class="memo-print">${esc(pf.memo) || ' '}</div>`;
+  return h + sourceBlock(p);
+}
+
+/* ---------- 화면 조립 ---------- */
+function renderList() {
+  document.getElementById('filters').innerHTML = CATS.map(c => `<button class="chip ${c===filter?'on':''}" data-cat="${c}">${c === '전체' ? c : ICON[c] + ' ' + c.replace('(방카슈랑스)','')}</button>`).join('');
+  document.getElementById('plist').innerHTML = P.filter(p => filter === '전체' || p.category === filter).map(p => {
+    const r = R[p.id];
+    const kv = r.kind === 'card' ? `연회비 ${r.feeS}` : r.kind === 'ins' ? p.insurer : `최고 연 ${pct(r.max)}`;
+    return `<li><button class="pitem ${p.id===cur?'on':''}" data-id="${p.id}"><span class="nm">${ICON[p.category]} ${esc(p.name)}</span><span class="ol">${esc(p.one_liner)}</span><span class="kv">${esc(kv)}</span></button></li>`;
+  }).join('');
+}
+function renderReports() {
+  const p = byId[cur];
+  const e = document.getElementById('rep-edu'), g = document.getElementById('rep-guide'), t = document.getElementById('rep-teller');
+  e.innerHTML = renderEdu(p);
+  g.innerHTML = renderGuide(p); runCalcs(g);
+  t.innerHTML = renderTeller(p);
+  document.title = `${p.name}  — IBK 상품 상담 가이드`;
+}
+function renderTellerOnly() {
+  const t = document.getElementById('rep-teller');
+  const focus = document.activeElement && document.activeElement.closest('#pform') ? document.activeElement.dataset.p || document.activeElement.dataset.need : null;
+  t.innerHTML = renderTeller(byId[cur]);
+  if (focus) { const el = t.querySelector(`[data-p="${focus}"],[data-need="${focus}"]`); if (el) { el.focus(); if (el.setSelectionRange && el.type === 'text') el.setSelectionRange(el.value.length, el.value.length); } }
+}
+function setTab(k) {
+  tab = k;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+  document.querySelectorAll('.report').forEach(a => a.classList.toggle('active', a.id === 'rep-' + k));
+}
+function select(id) { cur = id; renderList(); renderReports(); window.scrollTo({ top:0, behavior:'smooth' }); }
+
+document.getElementById('checked').textContent = `상품정보 기준일 ${CATALOG.checked_at} · ${P.length}개 상품`;
+document.addEventListener('click', ev => {
+  const c = ev.target.closest('[data-cat]'); if (c) { filter = c.dataset.cat; renderList(); return; }
+  const it = ev.target.closest('[data-id]'); if (it) { switched = null; select(it.dataset.id); return; }
+  const tb = ev.target.closest('.tab'); if (tb) { setTab(tb.dataset.k); return; }
+  const go = ev.target.closest('[data-go]'); if (go) { switched = { from: cur }; select(go.dataset.go); setTab('teller'); return; }
+  const back = ev.target.closest('[data-back]'); if (back) { const f = switched.from; switched = null; select(f); setTab('teller'); return; }
+  const ps = ev.target.closest('[data-preset]');
+  if (ps) { Object.assign(profile, PRESETS.find(s => s.key === ps.dataset.preset).v, { preset: ps.dataset.preset }); renderTellerOnly(); return; }
+});
+document.getElementById('print-one').onclick = () => { document.body.classList.remove('print-all'); window.print(); };
+document.getElementById('print-all').onclick = () => {
+  document.body.classList.add('print-all');
+  document.querySelectorAll('details.flash').forEach(d => d.open = true);
+  window.print();
+  setTimeout(() => document.body.classList.remove('print-all'), 500);
+};
+window.addEventListener('beforeprint', () => document.querySelectorAll('details.flash').forEach(d => d.open = true));
+document.getElementById('rep-guide').addEventListener('input', ev => { if (ev.target.closest('.calc')) runCalcs(document.getElementById('rep-guide')); });
+const tellerEl = document.getElementById('rep-teller');
+tellerEl.addEventListener('change', ev => {
+  const el = ev.target;
+  if (el.dataset.ck != null) { (checked[cur] ||= {})[el.dataset.ck] = el.checked; return; }
+  if (el.dataset.need) { profile.needs = [...tellerEl.querySelectorAll('[data-need]:checked')].map(x => x.dataset.need); renderTellerOnly(); return; }
+  if (el.dataset.p) {
+    const k = el.dataset.p;
+    profile[k] = el.type === 'checkbox' ? el.checked : el.type === 'number' || k === 'term' ? Number(el.value) || 0 : el.value;
+    renderTellerOnly();
+  }
+});
+tellerEl.addEventListener('input', ev => {
+  if (ev.target.classList.contains('memo')) { profile.memo = ev.target.value; tellerEl.querySelector('.memo-print').textContent = profile.memo; }
+});
+
+document.querySelectorAll('[data-icon]').forEach(e => e.outerHTML = icon(e.dataset.icon));
+renderList();
+renderReports();
+</script>
+</body>
+</html>
