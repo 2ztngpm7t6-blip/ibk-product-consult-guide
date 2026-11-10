@@ -63,12 +63,22 @@ IBK기업은행 개인 고객용 대표 상품 25개로 **직원 교육용 · �
 - 금리·조건 숫자는 스크립트가 `data/products.json`에서 직접 넣습니다. Claude가 쓴 문장 속 숫자가 데이터에 없으면 경고합니다.
 - 샘플 결과물은 `docs/samples/`에 있습니다.
 
+### 은행 공통 페르소나 분석 스킬
+
+`.claude/skills/bank-rookie-persona/`에는 IBK가 아닌 은행에서도 쓸 수 있도록 일반화한 **신입행원 페르소나 분석 스킬**이 함께 들어 있습니다.
+
+- 담당자·선배와 문답하며 상품 데이터·설문·공개 자료를 근거로 페르소나 보고서(HTML)를 만듭니다.
+- 모든 항목에 출처와 신뢰도를 표시합니다.
+- 설문 원자료는 자동으로 가명화합니다.
+- 별도 저장소: [bank-rookie-persona](https://github.com/2ztngpm7t6-blip/bank-rookie-persona) (사용법과 가상 은행 예시 포함)
+
 ## 파일 구성
 
 ```
 IBK_상품상담가이드.html        완성본(이 파일 하나만 있으면 됨)
 docs/                          신입행원 페르소나 분석, 스킬 샘플 결과물
 .claude/skills/ibk-rookie-coach/  신입행원 코치 스킬(SKILL.md, 참고 문서, render.py)
+.claude/skills/bank-rookie-persona/  은행 공통 신입행원 페르소나 분석 스킬
 data/products.json             상품 데이터 25개(공식 홈페이지 확인 내용)
 report-studio/template.html    화면·보고서 템플릿(규칙·계산기·화법 포함)
 report-studio/assets/logo.b64  로고 이미지 데이터(흰 배경 제거)
