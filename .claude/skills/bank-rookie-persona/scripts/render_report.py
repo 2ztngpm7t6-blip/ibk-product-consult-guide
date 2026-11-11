@@ -91,7 +91,7 @@ class Report:
                 f'<text x="{lab - 10}" y="{y + 15}" text-anchor="end" class="axl">{e(a["area"])}</text>'
                 f'<rect x="{lab}" y="{y + 3}" width="{max(bw, 2):.1f}" height="16" rx="4" style="fill:var(--brand)"/>'
                 f'<text x="{lab + bw + 8:.1f}" y="{y + 15}" class="val">{sc:.1f}</text>'
-                f'<text x="{lab + bw + 40:.1f}" y="{y + 15}" class="tick">위험 {e(a.get("risk", "-"))}</text></g>')
+                f'<text x="{lab + bw + 40:.1f}" y="{y + 15}" class="tick">위험 {e(a.get("risk", "-"))}{" · ⚠ 불일치" if a.get("conflict") else ""}</text></g>')
         grid = "".join(f'<line x1="{lab + (w - lab - 130) * t / 5:.1f}" x2="{lab + (w - lab - 130) * t / 5:.1f}" y1="4" y2="{h - 22}" class="grid"/>'
                        f'<text x="{lab + (w - lab - 130) * t / 5:.1f}" y="{h - 6}" text-anchor="middle" class="tick">{t}</text>' for t in range(0, 6))
         return f'<svg viewBox="0 0 {w} {h}" role="img" aria-label="영역별 어려움 점수 막대그래프">{grid}{"".join(bars)}</svg>'
@@ -245,7 +245,7 @@ class Report:
                  f'<h3>출처 목록</h3><div class="tw"><table><tr><th>ID</th><th>유형</th><th>자료</th><th>상세</th></tr>{srows}</table></div>{oq}</section>')
 
         return PAGE.format(
-            title=e(f'{m.get("bank", "")} 신입행원 페르소나 분석'),
+            title=e(f'{m.get("bank", "")} {m.get("role", "")} 신입행원 페르소나 분석'.replace("  ", " ")),
             bank=e(m.get("bank", "")), btype=e(m.get("bank_type", "")), role=e(m.get("role", "")),
             scope=e(m.get("scope", "")), training=e(m.get("training", "")), author=e(m.get("author", "")),
             date=e(m.get("date", "")), note=e(m.get("note", "교육 설계 참고용 분석")),
@@ -304,7 +304,7 @@ details summary{{cursor:pointer;color:var(--brand);margin-top:8px}}
 footer{{max-width:1080px;margin:0 auto 40px;padding:0 16px;font-size:12px;color:var(--muted)}}
 @media print{{nav{{display:none}}section{{break-inside:avoid}}header{{-webkit-print-color-adjust:exact;print-color-adjust:exact}}details{{display:block}}}}
 </style></head><body>
-<header><h1>{bank} 신입행원 페르소나 분석</h1><div class="meta"><span>{btype}</span><span>직무: {role}</span><span>범위: {scope}</span><span>연수: {training}</span></div></header>
+<header><h1>{title}</h1><div class="meta"><span>{btype}</span><span>직무: {role}</span><span>범위: {scope}</span><span>연수: {training}</span></div></header>
 <div class="banner">{note}</div>
 <nav><a href="#summary">한눈에</a><a href="#persona">페르소나</a><a href="#stages">성장 단계</a><a href="#difficulty">어려움 맵</a><a href="#findings">발견</a><a href="#survey">설문</a><a href="#proposals">교육 제안</a><a href="#sources">근거</a></nav>
 <main>{body}</main>

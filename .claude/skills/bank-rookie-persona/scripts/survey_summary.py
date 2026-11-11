@@ -20,10 +20,12 @@ SKIP = re.compile(r"지점|영업점|부서|소속|팀명|branch", re.I)
 def kind_of(vals):
     if all(v.isdigit() and 1 <= int(v) <= 5 for v in vals):
         return "likert"
+    if any(";" in v for v in vals):  # 복수 선택: ';'로 나눈 각 선택지가 짧을 때
+        opts = [x.strip() for v in vals for x in v.split(";") if x.strip()]
+        if opts and sum(len(x) for x in opts) / len(opts) <= 20:
+            return "multi"
     if sum(len(v) for v in vals) / len(vals) > 20:  # 긴 문장은 자유응답
         return "text"
-    if any(";" in v for v in vals):
-        return "multi"
     uniq = set(vals)
     if len(uniq) <= 12 and len(uniq) < max(2, len(vals) * 0.8):
         return "single"
